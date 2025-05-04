@@ -30,9 +30,11 @@ const App = () => {
   const markdownRef = useRef<MarkdownRef>(null);
 
   useEffect(() => {
+    markdownRef.current?.push(json.thinking_content, 'thinking');
     markdownRef.current?.push(json.content, 'answer');
   }, []);
-  return <Markdown ref={markdownRef} interval={5} />;
+  return <div className="ds-message-box">
+    <Markdown ref={markdownRef} interval={5} /></div>;
 };
 
 createRoot(document.getElementById('root')!).render(

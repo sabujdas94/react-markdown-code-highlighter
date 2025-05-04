@@ -1,0 +1,9 @@
+:root {
+    --message-list-padding-horizontal: 16px;
+    --message-list-max-width: 800px
+}
+
+.ds-message-box {
+    max-width: var(--message-list-max-width);
+    margin: 0 auto;
+}
