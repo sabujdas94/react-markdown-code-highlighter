@@ -7,7 +7,7 @@ import {
 } from "react";
 import remarkGfm from "remark-gfm";
 
-import ReactMarkdown from "react-markdown";
+import HighReactMarkdown from "./components/HighReactMarkdown";
 import "./index.less";
 
 type AnswerType = "answer" | "thinking";
@@ -191,15 +191,15 @@ const Markdown = forwardRef<MarkdownRef, MarkdownProps>(
               return null;
             }
             return (
-              <ReactMarkdown key={index}>
+              <HighReactMarkdown key={index}>
                 {paragraph.content || ""}
-              </ReactMarkdown>
+              </HighReactMarkdown>
             );
           })}
           {currentParagraph?.answerType === answerType && (
-            <ReactMarkdown key={currentParagraph.content}>
+            <HighReactMarkdown key={currentParagraph.content}>
               {currentParagraph.content || ""}
-            </ReactMarkdown>
+            </HighReactMarkdown>
           )}
         </div>
       );
@@ -210,11 +210,13 @@ const Markdown = forwardRef<MarkdownRef, MarkdownProps>(
         <div className="ds-markdown-thinking">
           {getParagraphs(thinkingParagraphs, "thinking")}
         </div>
-
-        {getParagraphs(answerParagraphs, "answer")}
+        <div className="ds-markdown-answer">
+          {getParagraphs(answerParagraphs, "answer")}
+        </div>
       </div>
     );
   },
 );
 
 export default Markdown;
+
