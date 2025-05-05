@@ -120,6 +120,7 @@ const Markdown = forwardRef<MarkdownRef, MarkdownProps>(
             answerType: char.answerType,
           };
           if (!_currentParagraph) {
+            // 如果当前没有段落，则直接设置为当前段落
             _currentParagraph = newCurrentParagraph;
           } else if (
             currentParagraph &&
@@ -131,6 +132,7 @@ const Markdown = forwardRef<MarkdownRef, MarkdownProps>(
               return newParagraphs;
             });
             _currentParagraph = newCurrentParagraph;
+            setCurrentParagraph(_currentParagraph);
           }
 
           setCurrentParagraph((prev) => {

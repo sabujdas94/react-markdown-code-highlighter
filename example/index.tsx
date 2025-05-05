@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import Markdown, { type MarkdownRef } from '../src';
-import json from './data.json';
+import json from './data2.json';
 
 import './index.css';
 
@@ -34,7 +34,7 @@ const App = () => {
     markdownRef.current?.push(json.content, 'answer');
   }, []);
   return <div className="ds-message-box">
-    <Markdown ref={markdownRef} interval={5} /></div>;
+    <Markdown ref={markdownRef} interval={1} /></div>;
 };
 
 createRoot(document.getElementById('root')!).render(

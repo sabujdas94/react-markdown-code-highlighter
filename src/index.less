@@ -1,3 +1,41 @@
+@import "./defined.less";
+body {
+  --dsr-main: #4d6bfe;
+  --dsr-main-2: rgba(77, 107, 254, 0.4);
+  --dsr-main-3: rgba(77, 107, 254, 0.2);
+  --dsr-bg: rgb(var(--ds-rgb-white));
+  --dsr-text-0: rgb(var(--ds-rgb-black));
+  --dsr-text-1: rgb(var(--ds-rgb-neutral-800));
+  --dsr-text-2: rgb(var(--ds-rgb-neutral-600));
+  --dsr-text-3: rgb(var(--ds-rgb-neutral-400));
+  --dsr-text-4: rgb(var(--ds-rgb-zinc-350));
+  --dsr-border-1: rgb(var(--ds-rgb-neutral-350));
+  --dsr-border-2: rgb(var(--ds-rgb-neutral-200));
+  --dsr-input-border: #dce0e9;
+  --dsr-input-bg: rgb(var(--ds-rgb-gray-100));
+  --dsr-button-main-bg: var(--dsr-main);
+  --dsr-button-main-bg-hover: #4166d5;
+  --dsr-button-second-bg: var(--dsr-main-3);
+  --dsr-button-grey-0: rgb(var(--ds-rgb-neutral-150));
+  --dsr-button-grey-1: rgb(var(--ds-rgb-neutral-100));
+  --dsr-button-grey-2: rgb(var(--ds-rgb-neutral-50));
+  --dsr-delete-button-bg: rgb(var(--ds-rgb-red-500) / 0.85);
+  --dsr-delete-button-bg-hover: rgb(var(--ds-rgb-red-550));
+  --dsr-tooltip-fg: #eff6ff;
+  --dsr-tooltip-bg: rgb(var(--ds-rgb-neutral-850));
+  --dsr-side-bg: #f9fbff;
+  --dsr-side-hover-bg-rgb: 239, 246, 255;
+  --dsr-side-hover-bg: rgb(var(--ds-rgb-blue-50));
+  --dsr-icon-fg-1: rgb(var(--ds-rgb-neutral-650));
+  --dsr-icon-hover-0: rgb(var(--ds-rgb-neutral-150));
+  --dsr-icon-hover-1: rgb(var(--ds-rgb-neutral-100));
+  --dsr-side-icon-hover: rgb(var(--ds-rgb-slate-100));
+  --dsr-error-fg: rgb(var(--ds-rgb-red-550));
+  --dsr-risk-text: #e4773d;
+  --dsr-risk-border: rgba(228, 119, 61, 0.1);
+  --dsr-risk-fill: rgba(228, 119, 61, 0.05);
+}
+
 body,
 page,
 .ds-theme {
@@ -142,7 +180,7 @@ body.en_US .ds-theme {
 
 .ds-markdown hr {
   height: 1px;
-  margin: calc(var(--ds-md-zoom) * 12px) 0;
+  margin: 32px 0;
   background: rgb(var(--ds-rgb-label-3));
   border: none;
   display: block;
@@ -409,7 +447,7 @@ body.en_US .ds-theme {
   border-left: 2px solid #e5e5e5;
   padding: 0 0 0 12px;
   color: #8b8b8b;
-  white-space: pre-wrap;
+  //   white-space: pre-wrap;
   line-height: 26px;
   font-size: var(--ds-font-size-m);
 }
