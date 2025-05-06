@@ -1,26 +1,35 @@
 {
+  "extends": "./tsconfig-base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
+    "paths": {
+      "@/test": [
+        "./test"
+      ],
+      "@/test/*": [
+        "./test/*"
+      ],
+      "react-day-picker": [
+        "./src"
+      ],
+      "react-day-picker/*": [
+        "./src/*"
+      ]
+    },
     "noEmit": true,
-    "jsx": "react-jsx",
-
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "types": [
+      "node",
+      "jest",
+      "@testing-library/jest-dom",
+      "@types/jest"
+    ]
   },
-  "include": ["src", "example", "shim.d.ts"]
+  "include": [
+    "src",
+    "test",
+    "**/*.test.*",
+    "example"
+  ],
+  "exclude": [
+    "website"
+  ]
 }

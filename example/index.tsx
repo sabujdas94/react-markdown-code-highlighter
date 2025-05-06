@@ -5,7 +5,7 @@ import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
-import Markdown, { type MarkdownRef } from '../src';
+import Markdown, { type MarkdownRef } from '../src/index.tsx';
 import json from './data2.json';
 
 import './index.css';

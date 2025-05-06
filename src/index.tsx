@@ -5,7 +5,6 @@ import {
   useRef,
   useState,
 } from "react";
-import remarkGfm from "remark-gfm";
 
 import HighReactMarkdown from "./components/HighReactMarkdown";
 import "./index.less";
