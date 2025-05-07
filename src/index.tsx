@@ -7,6 +7,7 @@ import {
 } from "react";
 
 import HighReactMarkdown from "./components/HighReactMarkdown/index.js";
+import classNames from "classnames";
 
 type AnswerType = "answer" | "thinking";
 
@@ -185,7 +186,7 @@ const Markdown = forwardRef<MarkdownRef, MarkdownProps>(
       answerType: AnswerType,
     ) => {
       return (
-        <div className={`ds-typed-${answerType}`}>
+        <div className={`ds-markdown-paragraph ds-typed-${answerType}`}>
           {paragraphs.map((paragraph, index) => {
             if (paragraph.type === "br") {
               return null;
@@ -206,7 +207,10 @@ const Markdown = forwardRef<MarkdownRef, MarkdownProps>(
     };
 
     return (
-      <div className="ds-markdown">
+      <div className={classNames({
+        'ds-markdown': true,
+        "apple": true
+      })}>
         <div className="ds-markdown-thinking">
           {getParagraphs(thinkingParagraphs, "thinking")}
         </div>
