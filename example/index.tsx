@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client';
 // import remarkRehype from 'remark-rehype';
 // import rehypeStringify from 'rehype-stringify';
 import Markdown, { type MarkdownRef } from '../src';
-import '../src/style.less'
+import '../src/style.less';
 import json from './data2.json';
 
 import './index.css';
@@ -27,17 +27,25 @@ import './index.css';
 // console.dir(processor.value);
 
 const App = () => {
-//   return null;
+  //   return null;
   const markdownRef = useRef<MarkdownRef>(null);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   markdownRef.current?.push(json.thinking_content, 'thinking');
+  //   markdownRef.current?.push(json.content, 'answer');
+  // }, []);
+
+  const onClick = () => {
+    markdownRef.current?.clear();
     markdownRef.current?.push(json.thinking_content, 'thinking');
     markdownRef.current?.push(json.content, 'answer');
-  }, []);
-  return <div className="ds-message-box">
-    <Markdown ref={markdownRef} interval={1} /></div>;
+  };
+  return (
+    <div className="ds-message-box">
+      <button onClick={onClick}>显示</button>
+      <Markdown ref={markdownRef} interval={1} />
+    </div>
+  );
 };
 
-createRoot(document.getElementById('root')!).render(
-  <App />,
-);
+createRoot(document.getElementById('root')!).render(<App />);

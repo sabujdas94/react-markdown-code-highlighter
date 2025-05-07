@@ -27,6 +27,7 @@ interface MarkdownProps {
 
 export interface MarkdownRef {
   push: (content: string, answerType: AnswerType) => void;
+  clear: () => void;
 }
 const Markdown = forwardRef<MarkdownRef, MarkdownProps>(
   ({ interval = 30, isClosePrettyTyped = false }, ref) => {
@@ -42,12 +43,17 @@ const Markdown = forwardRef<MarkdownRef, MarkdownProps>(
     const currentParagraphRef = useRef<IParagraph | undefined>(undefined);
     currentParagraphRef.current = currentParagraph;
 
+    const clearTimer = () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      isTypedRef.current = false;
+    };
+
     useEffect(() => {
       return () => {
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-          timerRef.current = null;
-        }
+        clearTimer();
       };
     }, []);
 
@@ -171,6 +177,12 @@ const Markdown = forwardRef<MarkdownRef, MarkdownProps>(
         if (!isTypedRef.current) {
           startTypedTask();
         }
+      },
+      clear: () => {
+        clearTimer();
+        charsRef.current = [];
+        setStableParagraphs([]);
+        setCurrentParagraph(undefined);
       },
     }));
 

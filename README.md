@@ -19,8 +19,10 @@ npm install ds-markdown
 
 ## 示例
 
+[在线查看](https://stackblitz.com/edit/vitejs-vite-ddfw8avb?file=src%2FApp.tsx)
+
 ```tsx
-import { useRef, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import DsMarkdown from 'ds-markdown';
 import 'ds-markdown/style.css';
 
@@ -31,25 +33,29 @@ const markdown = `# ds-markdown
 ## 特性
 
 - 🛠 自带打字效果
-- 🦮 内部封装了常用的`markdown`格式的文本显示
+- 🦮 内部封装了常用的\`markdown\`格式的文本显示
 - 🔤 对大文档进行了性能优化，进行分批处理，生成打字效果的时候不会对页面造成卡顿现象
-`
+`;
 
-function MyDatePicker() {
-  const [selected, setSelected] = useState<Date>();
-
+function App() {
   const ref = useRef();
 
   const onClick = () => {
-    ref.current.push('这是思考过程:我正在思考 ds-markdown是什么', 'thinking');
-    ref.current.push('markdown', 'answer');
+    // 如果重复点击，则会清空之前的效果
+    ref.current.clear();
+    // 显示思考过程
+    ref.current.push('这是思考过程:我正在思考 ds-markdown是什么\n\n思考完成,准备发送答案', 'thinking');
+    // 显示结果
+    ref.current.push(markdown, 'answer');
   };
 
   return (
     <div>
-      <button onClick={onClick}>显示文字</button>
+      <button onClick={onClick}>点击显示文字效果</button>
       <DsMarkdown ref={ref} />
     </div>
   );
 }
+
+export default App;
 ```
