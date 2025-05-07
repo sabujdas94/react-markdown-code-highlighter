@@ -7,7 +7,6 @@ import {
 } from "react";
 
 import HighReactMarkdown from "./components/HighReactMarkdown";
-import "./index.less";
 
 type AnswerType = "answer" | "thinking";
 

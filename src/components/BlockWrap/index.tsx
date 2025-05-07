@@ -1,12 +1,10 @@
 import React from "react";
-import "./index.less";
 
 interface BlockWrapProps {
   children: React.ReactNode;
   language: string;
 }
 
-const modulePrefix = "BlockWrap";
 const BlockWrap: React.FC<BlockWrapProps> = ({ children, language }) => {
   return (
     <div className="md-code-block md-code-block-light">
