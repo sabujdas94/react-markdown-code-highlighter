@@ -29,7 +29,7 @@
         "./style.css": "./dist/style.css"
     },
     "files": [
-        "dist",
+        "dist"
     ],
     "scripts": {
         "dev": "vite",
