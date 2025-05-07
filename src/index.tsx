@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 
-import HighReactMarkdown from "./components/HighReactMarkdown";
+import HighReactMarkdown from "./components/HighReactMarkdown/index.js";
 
 type AnswerType = "answer" | "thinking";
 
