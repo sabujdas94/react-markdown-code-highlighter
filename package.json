@@ -1,12 +1,20 @@
 {
     "name": "ds-markdown",
     "private": false,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "main": "./dist/cjs/index.js",
     "types": "./dist/cjs/index.d.ts",
     "module": "./dist/esm/index.js",
     "style": "./src/style.css",
     "type": "module",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/onshinpei/ds-markdown"
+    },
+    "bugs": {
+        "url": "https://github.com/onshinpei/ds-markdown/issues"
+    },
     "exports": {
         ".": {
             "import": {
@@ -21,7 +29,7 @@
         "./style.css": "./dist/style.css"
     },
     "files": [
-        "dist"
+        "dist",
     ],
     "scripts": {
         "dev": "vite",
@@ -31,7 +39,8 @@
         "build:less": "lessc src/style.less dist/style.css",
         "lint": "eslint .",
         "preview": "vite preview",
-        "prepublish": "npm run build"
+        "prepublish": "npm run build",
+        "prepublishOnly": "npm run build"
     },
     "dependencies": {
         "react-markdown": "^10.1.0",
@@ -77,5 +86,8 @@
         "typescript-eslint": "^8.30.1",
         "unified": "^11.0.5",
         "vite": "^6.3.2"
+    },
+    "peerDependencies": {
+        "react": ">=16.8.0"
     }
 }
