@@ -33,7 +33,7 @@ const Markdown = forwardRef<MarkdownRef, MarkdownProps>(
     const charsRef = useRef<{ content: string; answerType: AnswerType }[]>([]);
     const isTypedRef = useRef(false);
 
-    const timerRef = useRef<number | null>(null);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
     const [stableParagraphs, setStableParagraphs] = useState<IParagraph[]>([]);
     const [currentParagraph, setCurrentParagraph] = useState<
       IParagraph | undefined
