@@ -11,12 +11,17 @@ export interface MarkdownRef {
   clear: () => void;
 }
 const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, isClosePrettyTyped = false, onEnd, onStart }, ref) => {
+  /** 当前需要打字的内容 */
   const charsRef = useRef<{ content: string; answerType: AnswerType }[]>([]);
+  /** 是否卸载 */
   const isUnmountRef = useRef(false);
+  /** 是否正在打字 */
   const isTypedRef = useRef(false);
 
+  /** 打字结束回调, */
   const onEndRef = useRef(onEnd);
   onEndRef.current = onEnd;
+  /** 打字开始回调 */
   const onStartRef = useRef(onStart);
   onStartRef.current = onStart;
 
