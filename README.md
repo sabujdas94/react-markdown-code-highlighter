@@ -26,7 +26,18 @@ npm install ds-markdown
 <a href="https://www.npmjs.com/package/ds-markdown"><img src="https://img.shields.io/npm/v/ds-markdown" alt="npm version"/></a>
 <img src="https://img.shields.io/npm/dm/ds-markdown.svg" alt="npm downloads"/> <img src="https://img.shields.io/bundlephobia/minzip/ds-markdown" alt="Min gzipped size"/>
 
-## 使用示例
+## props
+
+### 默认导出
+
+| 属性名       | 类型                         | 说明                               | 默认值   |
+| ------------ | ---------------------------- | ---------------------------------- | -------- |
+| `interval`   | `number`                     | 打字的速度`ms`                     | `30`     |
+| `answerType` | `thinking` \| `answer`       | `markdown`类型                     | `answer` |
+| `onEnd`      | `() => void`                 | 打字结束后回调，**可能会触发多次** | -        |
+| `onStart`    | `(isFirst: boolean) => void` | 打字开始回调 **可能会触发多次**    | -        |
+
+## 使用示例 - default export
 
 [在线查看](https://stackblitz.com/edit/vitejs-vite-ddfw8avb?file=src%2FApp.tsx)
 
@@ -47,12 +58,12 @@ const markdown = `# ds-markdown
 `;
 
 function App() {
-  const [thinkingContent, setThkingContent] = useState('');
+  const [thinkingContent, setThinkingContent] = useState('');
   const [answerContent, setAnswerContent] = useState('');
 
   const onClick = () => {
     // 如果重复点击，则会清空之前的效果
-    setThkingContent('这是我思考的内容，我已经思考完成，下面是我的答案');
+    setThinkingContent('这是我思考的内容，我已经思考完成，下面是我的答案');
   };
 
   console.log(answerContent);
