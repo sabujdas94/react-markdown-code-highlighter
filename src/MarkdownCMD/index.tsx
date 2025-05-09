@@ -12,6 +12,7 @@ export interface MarkdownRef {
 }
 const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, isClosePrettyTyped = false, onEnd, onStart }, ref) => {
   const charsRef = useRef<{ content: string; answerType: AnswerType }[]>([]);
+  const isUnmountRef = useRef(false);
   const isTypedRef = useRef(false);
 
   const onEndRef = useRef(onEnd);
@@ -34,8 +35,9 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
   };
 
   useEffect(() => {
+    isUnmountRef.current = false;
     return () => {
-      clearTimer();
+      isUnmountRef.current = true;
     };
   }, []);
 
@@ -51,6 +53,9 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     }
 
     function startTyped() {
+      if (isUnmountRef.current) {
+        return;
+      }
       isTypedRef.current = true;
       onStartRef.current?.();
       const char = chars.shift();

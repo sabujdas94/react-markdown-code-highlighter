@@ -1,5 +1,5 @@
-import MarkdownCMD from './MarkdownCMD';
-import Markdown from './Markdown';
+import MarkdownCMD from './MarkdownCMD/index.js';
+import Markdown from './Markdown/index.js';
 
 export default Markdown;
 

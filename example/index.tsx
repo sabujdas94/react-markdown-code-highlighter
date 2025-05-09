@@ -27,7 +27,6 @@ import './index.css';
 // console.dir(processor.value);
 
 const App = () => {
-  const [showAnswer, setShowAnswer] = useState(false);
   const [thinkingContent, setThinkingContent] = useState('');
   const [answerContent, setAnswerContent] = useState('');
   const onClick = () => {
@@ -56,4 +55,8 @@ const App = () => {
   );
 };
 
-createRoot(document.getElementById('root')!).render(<App />);
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
