@@ -32,15 +32,21 @@ const App = () => {
   const onClick = () => {
     setThinkingContent(json.thinking_content);
   };
+  const onReset = () => {
+    setThinkingContent('');
+    setAnswerContent('');
+  };
   return (
     <div className="ds-message-box">
-      <button onClick={onClick}>显示</button>
+      {thinkingContent ? <button onClick={onReset}>重置</button> : <button onClick={onClick}>显示</button>}
       <Markdown
         interval={10}
         answerType="thinking"
         onEnd={() => {
           console.log('思考完成');
-          setAnswerContent(json.content);
+          if (thinkingContent) {
+            setAnswerContent(json.content);
+          }
         }}
       >
         {thinkingContent}

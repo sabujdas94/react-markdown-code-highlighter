@@ -1,28 +1,26 @@
-import React, { memo } from "react";
-import Markdown from "react-markdown";
-import type { Options } from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import gfmPlugin from "remark-gfm";
+import React, { memo } from 'react';
+import Markdown from 'react-markdown';
+import type { Options } from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import gfmPlugin from 'remark-gfm';
 
-import BlockWrap from "../BlockWrap/index.js";
+import BlockWrap from '../BlockWrap/index.js';
 
 interface HighReactMarkdownProps extends Options {
   id?: number;
 }
 
-const modulePrefix = "HighReactMarkdown";
+const modulePrefix = 'HighReactMarkdown';
 const HighReactMarkdown: React.FC<HighReactMarkdownProps> = (props) => {
   return (
     <Markdown
       remarkPlugins={[gfmPlugin]}
       components={{
         code: ({ className, children, ...props }) => {
-          const match = /language-(\w+)/.exec(className || "");
+          const match = /language-(\w+)/.exec(className || '');
           return match ? (
             <BlockWrap language={match[1]}>
-              <SyntaxHighlighter language={match[1]}>
-                {String(children).replace(/\n$/, "")}
-              </SyntaxHighlighter>
+              <SyntaxHighlighter language={match[1]}>{String(children).replace(/\n$/, '')}</SyntaxHighlighter>
             </BlockWrap>
           ) : (
             <code className={className} {...props}>
@@ -31,7 +29,11 @@ const HighReactMarkdown: React.FC<HighReactMarkdownProps> = (props) => {
           );
         },
         table: ({ children, ...props }) => {
-          return <div className="markdown-table-wrapper">{children}</div>;
+          return (
+            <div className="markdown-table-wrapper">
+              <table className="ds-markdown-table">{children}</table>
+            </div>
+          );
         },
       }}
       {...props}
