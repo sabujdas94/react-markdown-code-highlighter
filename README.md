@@ -59,3 +59,7 @@ function App() {
 
 export default App;
 ```
+
+## License
+
+MIT

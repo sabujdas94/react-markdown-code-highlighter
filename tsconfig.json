@@ -9,12 +9,6 @@
       "@/test/*": [
         "./test/*"
       ],
-      "react-day-picker": [
-        "./src"
-      ],
-      "react-day-picker/*": [
-        "./src/*"
-      ]
     },
     "noEmit": true,
     "types": [
