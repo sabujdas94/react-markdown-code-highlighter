@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface BlockWrapProps {
   children: React.ReactNode;
@@ -12,11 +12,11 @@ const BlockWrap: React.FC<BlockWrapProps> = ({ children, language }) => {
         <div className="md-code-block-banner md-code-block-banner-lite">
           <div className="md-code-block-banner-content">
             <div className="md-code-block-language">{language}</div>
-            <div className="md-code-block-copy">复制</div>
+            {/* <div className="md-code-block-copy">复制</div> */}
           </div>
         </div>
       </div>
-      {children}
+      <div className="md-code-block-content">{children}</div>
     </div>
   );
 };

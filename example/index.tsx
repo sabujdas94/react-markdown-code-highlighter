@@ -7,7 +7,7 @@ import { createRoot } from 'react-dom/client';
 // import rehypeStringify from 'rehype-stringify';
 import Markdown from '../src';
 import '../src/style.less';
-import json from './data2.json';
+import json from './data4.json';
 
 import './index.css';
 

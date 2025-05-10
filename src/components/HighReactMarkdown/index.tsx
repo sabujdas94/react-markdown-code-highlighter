@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import Markdown from 'react-markdown';
 import type { Options } from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import gfmPlugin from 'remark-gfm';
 
 import BlockWrap from '../BlockWrap/index.js';
