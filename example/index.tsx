@@ -38,7 +38,9 @@ const App = () => {
   };
   return (
     <div className="ds-message-box">
-      {thinkingContent ? <button onClick={onReset}>重置</button> : <button onClick={onClick}>显示</button>}
+      <div className="ds-message-actions">
+        {thinkingContent ? <button onClick={onReset}>重置</button> : <button onClick={onClick}>显示</button>} <span style={{ marginLeft: 30 }}>React 19有哪些新特性</span>
+      </div>
       <Markdown
         interval={10}
         answerType="thinking"

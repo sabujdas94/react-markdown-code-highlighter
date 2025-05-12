@@ -1,9 +1,24 @@
 :root {
-    --message-list-padding-horizontal: 16px;
-    --message-list-max-width: 800px
+  --message-list-padding-horizontal: 16px;
+  --message-list-max-width: 800px;
 }
 
 .ds-message-box {
-    max-width: var(--message-list-max-width);
-    margin: 0 auto;
+  max-width: var(--message-list-max-width);
+  margin: 0 auto;
+}
+
+.ds-message-actions {
+  padding: 30px;
+
+  button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 1px solid #1890ff;
+    background-color: #1890ff;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+  }
 }
