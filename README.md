@@ -2,6 +2,8 @@
 
 `ds-markdown`是一个[React](https://react.dev)组件, 类似[deepseek官网](https://chat.deepseek.com/)风格的 `Markdown`
 
+[DEMO](https://onshinpei.github.io/ds-markdown/)
+
 ## 特性
 
 - 🛠 自带打字效果
