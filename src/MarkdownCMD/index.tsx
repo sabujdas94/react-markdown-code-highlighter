@@ -57,11 +57,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
   const thinkingParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'thinking'), [stableParagraphs]);
   const answerParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'answer'), [stableParagraphs]);
 
-  const triggerOnStart = (char: IChar) => {
-    const onStartFn = onStartRef.current;
-    if (!onStartFn) {
-      return;
-    }
+  const recordTypedChars = (char: IChar) => {
     let prevStr = '';
     if (!typedCharsRef.current || typedCharsRef.current.answerType !== char.answerType) {
       typedCharsRef.current = {
@@ -72,6 +68,23 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       prevStr = typedCharsRef.current.typedContent;
       typedCharsRef.current.typedContent += char.content;
     }
+
+    return {
+      prevStr,
+      nextStr: typedCharsRef.current?.typedContent || '',
+    };
+  };
+
+  /**
+   * 触发打字开始回调
+   * @param char 当前字符
+   */
+  const triggerOnStart = (char: IChar) => {
+    const onStartFn = onStartRef.current;
+    if (!onStartFn) {
+      return;
+    }
+    const { prevStr } = recordTypedChars(char);
     onStartRef.current?.({
       currentIndex: prevStr.length,
       currentChar: char.content,
@@ -80,6 +93,9 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     });
   };
 
+  /**
+   * 触发打字结束回调
+   */
   const triggerOnEnd = () => {
     const onEndFn = onEndRef.current;
     if (!onEndFn) {
@@ -98,6 +114,11 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     }
 
     const chars = charsRef.current;
+
+    const firstChar = chars[0];
+    if (firstChar) {
+      triggerOnStart(firstChar);
+    }
 
     const stopTyped = () => {
       isTypedRef.current = false;
@@ -127,7 +148,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         stopTyped();
         return;
       }
-      triggerOnStart(char);
+      recordTypedChars(char);
       const currentParagraph = currentParagraphRef.current;
       /** 如果碰到 则需要处理成两个段落 */
       if (char.content === '\n\n') {
