@@ -44,11 +44,14 @@ const App = () => {
       <Markdown
         interval={10}
         answerType="thinking"
-        onEnd={() => {
-          console.log('思考完成');
+        onEnd={(args) => {
+          console.log('思考完成', args);
           if (thinkingContent) {
             setAnswerContent(json.content);
           }
+        }}
+        onStart={(args) => {
+          console.log('思考开始', args);
         }}
       >
         {thinkingContent}

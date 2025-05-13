@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /**
  * 回答类型，思考和回答
  */
@@ -24,8 +25,14 @@ export interface MarkdownProps {
   interval: number;
   /** 是否关闭匀速打字机效果 */
   isClosePrettyTyped?: boolean;
-  /** 打字完成后回调 */
-  onEnd?: () => void;
+  /** 打字完成后回调,  */
+  onEnd?: (data?: { str?: string; answerType?: AnswerType }) => void;
   /** 开始打字回调 */
-  onStart?: () => void;
+  onStart?: (data?: { currentIndex?: number; currentChar?: string; answerType?: AnswerType; prevStr?: string }) => void;
+  /**
+   * 打字机打完一个字符回调
+   * @param char 字符
+   * @param index 字符索引
+   */
+  onChar?: (char: string, index?: number) => void;
 }

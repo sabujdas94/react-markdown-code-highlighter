@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
 import HighReactMarkdown from '../components/HighReactMarkdown/index.js';
 import classNames from 'classnames';
@@ -6,13 +6,21 @@ import { AnswerType, IParagraph, MarkdownProps } from '../defined.js';
 
 type MarkdownCMDProps = MarkdownProps;
 
+interface IChar {
+  content: string;
+  answerType: AnswerType;
+}
+
 export interface MarkdownRef {
   push: (content: string, answerType: AnswerType) => void;
   clear: () => void;
 }
 const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, isClosePrettyTyped = false, onEnd, onStart }, ref) => {
   /** 当前需要打字的内容 */
-  const charsRef = useRef<{ content: string; answerType: AnswerType }[]>([]);
+  const charsRef = useRef<IChar[]>([]);
+
+  /** 已经打过的字 */
+  const typedCharsRef = useRef<{ typedContent: string; answerType: AnswerType } | undefined>(undefined);
   /** 是否卸载 */
   const isUnmountRef = useRef(false);
   /** 是否正在打字 */
@@ -46,14 +54,65 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     };
   }, []);
 
-  function startTypedTask() {
+  const thinkingParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'thinking'), [stableParagraphs]);
+  const answerParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'answer'), [stableParagraphs]);
+
+  const triggerOnStart = (char: IChar) => {
+    const onStartFn = onStartRef.current;
+    if (!onStartFn) {
+      return;
+    }
+    let prevStr = '';
+    if (!typedCharsRef.current || typedCharsRef.current.answerType !== char.answerType) {
+      typedCharsRef.current = {
+        typedContent: char.content,
+        answerType: char.answerType,
+      };
+    } else {
+      prevStr = typedCharsRef.current.typedContent;
+      typedCharsRef.current.typedContent += char.content;
+    }
+    onStartRef.current?.({
+      currentIndex: prevStr.length,
+      currentChar: char.content,
+      answerType: char.answerType,
+      prevStr,
+    });
+  };
+
+  const triggerOnEnd = () => {
+    const onEndFn = onEndRef.current;
+    if (!onEndFn) {
+      return;
+    }
+
+    onEndFn({
+      str: typedCharsRef.current?.typedContent,
+      answerType: typedCharsRef.current?.answerType,
+    });
+  };
+
+  const startTypedTask = () => {
     if (isTypedRef.current) {
       return;
     }
 
     const chars = charsRef.current;
 
+    const stopTyped = () => {
+      isTypedRef.current = false;
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      triggerOnEnd();
+    };
+
     function nextTyped() {
+      if (chars.length === 0) {
+        stopTyped();
+        return;
+      }
       timerRef.current = setTimeout(startTyped, interval);
     }
 
@@ -62,18 +121,15 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         return;
       }
       isTypedRef.current = true;
-      onStartRef.current?.();
+
       const char = chars.shift();
       if (char === undefined) {
-        isTypedRef.current = false;
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-          timerRef.current = null;
-        }
-        onEndRef.current?.();
+        stopTyped();
         return;
       }
+      triggerOnStart(char);
       const currentParagraph = currentParagraphRef.current;
+      /** 如果碰到 则需要处理成两个段落 */
       if (char.content === '\n\n') {
         if (currentParagraph) {
           setStableParagraphs((prev) => {
@@ -106,6 +162,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         return;
       }
 
+      // 处理当前段落
       let _currentParagraph = currentParagraph;
       const newCurrentParagraph: IParagraph = {
         content: '',
@@ -113,10 +170,12 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         type: 'text',
         answerType: char.answerType,
       };
+
       if (!_currentParagraph) {
         // 如果当前没有段落，则直接设置为当前段落
         _currentParagraph = newCurrentParagraph;
       } else if (currentParagraph && currentParagraph?.answerType !== char.answerType) {
+        // 如果当前段落和当前字符的回答类型不一致，则需要处理成两个段落
         setStableParagraphs((prev) => {
           const newParagraphs = [...prev];
           newParagraphs.push({ ...currentParagraph, isTyped: false });
@@ -138,11 +197,11 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     }
 
     startTyped();
-  }
+  };
 
   useImperativeHandle(ref, () => ({
     push: (content: string, answerType: AnswerType) => {
-      // 如果朋友\n,则\n这两个字符要合一起，作为一个字符处理,并且把多个\n处理成一个\n
+      // 如果两个\n,则\n这两个字符要合一起，作为一个字符处理,并且把多个\n处理成一个\n
       const charsGroup = content.split('\n\n');
       charsGroup.forEach((chars, index) => {
         if (isClosePrettyTyped) {
@@ -155,8 +214,6 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         }
       });
 
-      // charsRef.current.push({ content: content, answerType });
-
       if (!isTypedRef.current) {
         startTypedTask();
       }
@@ -168,9 +225,6 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       setCurrentParagraph(undefined);
     },
   }));
-
-  const thinkingParagraphs = stableParagraphs.filter((paragraph) => paragraph.answerType === 'thinking');
-  const answerParagraphs = stableParagraphs.filter((paragraph) => paragraph.answerType === 'answer');
 
   const getParagraphs = (paragraphs: IParagraph[], answerType: AnswerType) => {
     return (
