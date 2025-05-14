@@ -3,14 +3,41 @@
   --message-list-max-width: 800px;
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+.ds-message {
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
 .ds-message-box {
-  max-width: var(--message-list-max-width);
+  flex: 1;
+  overflow: auto;
+}
+
+.ds-message-list {
+  width: var(--message-list-max-width);
   margin: 0 auto;
 }
 
 .ds-message-actions {
   padding: 30px;
-
+  width: var(--message-list-max-width);
+  margin: 0 auto;
   button {
     padding: 10px 20px;
     border-radius: 5px;
