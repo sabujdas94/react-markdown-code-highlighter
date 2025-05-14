@@ -45,20 +45,38 @@ const App = () => {
         interval={10}
         answerType="thinking"
         onEnd={(args) => {
-          console.log('思考完成', args);
+          // console.log('思考完成', args);
           if (thinkingContent) {
             setAnswerContent(json.content);
           }
         }}
-        onStart={(args) => {
-          console.log('思考开始', args);
-        }}
+        // onStart={(args) => {
+        //   console.log('思考开始', args);
+        // }}
+        // onTypedChar={(args) => {
+        //   console.log('打字中', args);
+        // }}
       >
         {thinkingContent}
       </Markdown>
 
       {answerContent && (
-        <Markdown interval={10} answerType="answer">
+        <Markdown
+          interval={10}
+          answerType="answer"
+          // onEnd={(args) => {
+          //   console.log('思考完成', args);
+          //   if (thinkingContent) {
+          //     setAnswerContent(json.content);
+          //   }
+          // }}
+          // onStart={(args) => {
+          //   console.log('思考开始', args);
+          // }}
+          // onTypedChar={(args) => {
+          //   console.log('打字中', args);
+          // }}
+        >
           {answerContent}
         </Markdown>
       )}

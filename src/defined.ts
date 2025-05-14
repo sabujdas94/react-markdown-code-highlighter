@@ -34,5 +34,5 @@ export interface MarkdownProps {
    * @param char 字符
    * @param index 字符索引
    */
-  onChar?: (char: string, index?: number) => void;
+  onTypedChar?: (data?: { currentIndex?: number; currentChar?: string; answerType?: AnswerType; prevStr?: string }) => void;
 }

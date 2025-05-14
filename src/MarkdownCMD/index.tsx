@@ -15,12 +15,12 @@ export interface MarkdownRef {
   push: (content: string, answerType: AnswerType) => void;
   clear: () => void;
 }
-const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, isClosePrettyTyped = false, onEnd, onStart }, ref) => {
+const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, isClosePrettyTyped = false, onEnd, onStart, onTypedChar }, ref) => {
   /** 当前需要打字的内容 */
   const charsRef = useRef<IChar[]>([]);
 
   /** 已经打过的字 */
-  const typedCharsRef = useRef<{ typedContent: string; answerType: AnswerType } | undefined>(undefined);
+  const typedCharsRef = useRef<{ typedContent: string; answerType: AnswerType; prevStr: string } | undefined>(undefined);
   /** 是否卸载 */
   const isUnmountRef = useRef(false);
   /** 是否正在打字 */
@@ -32,6 +32,9 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
   /** 打字开始回调 */
   const onStartRef = useRef(onStart);
   onStartRef.current = onStart;
+  /** 打字过程中回调 */
+  const onTypedCharRef = useRef(onTypedChar);
+  onTypedCharRef.current = onTypedChar;
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [stableParagraphs, setStableParagraphs] = useState<IParagraph[]>([]);
@@ -63,10 +66,12 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       typedCharsRef.current = {
         typedContent: char.content,
         answerType: char.answerType,
+        prevStr: '',
       };
     } else {
       prevStr = typedCharsRef.current.typedContent;
       typedCharsRef.current.typedContent += char.content;
+      typedCharsRef.current.prevStr = prevStr;
     }
 
     return {
@@ -108,17 +113,34 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     });
   };
 
+  /**
+   * 触发打字过程中回调
+   * @param char 当前字符
+   * @param isStartPoint 是否是开始打字(第一个字)
+   */
+  const triggerOnTypedChar = (char: IChar, isStartPoint = false) => {
+    const onTypedCharFn = onTypedCharRef.current;
+    if (!isStartPoint) {
+      recordTypedChars(char);
+    }
+    if (!onTypedCharFn) {
+      return;
+    }
+
+    onTypedCharFn({
+      currentIndex: typedCharsRef.current?.prevStr.length || 0,
+      currentChar: char.content,
+      answerType: char.answerType,
+      prevStr: typedCharsRef.current?.prevStr || '',
+    });
+  };
+
   const startTypedTask = () => {
     if (isTypedRef.current) {
       return;
     }
 
     const chars = charsRef.current;
-
-    const firstChar = chars[0];
-    if (firstChar) {
-      triggerOnStart(firstChar);
-    }
 
     const stopTyped = () => {
       isTypedRef.current = false;
@@ -137,7 +159,11 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       timerRef.current = setTimeout(startTyped, interval);
     }
 
-    function startTyped() {
+    /**
+     * 开始打字
+     * @param isStartPoint 是否是开始打字
+     */
+    function startTyped(isStartPoint = false) {
       if (isUnmountRef.current) {
         return;
       }
@@ -148,7 +174,14 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         stopTyped();
         return;
       }
-      recordTypedChars(char);
+
+      if (isStartPoint) {
+        triggerOnStart(char);
+        triggerOnTypedChar(char, isStartPoint);
+      } else {
+        triggerOnTypedChar(char);
+      }
+
       const currentParagraph = currentParagraphRef.current;
       /** 如果碰到 则需要处理成两个段落 */
       if (char.content === '\n\n') {
@@ -217,7 +250,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       nextTyped();
     }
 
-    startTyped();
+    startTyped(true);
   };
 
   useImperativeHandle(ref, () => ({
