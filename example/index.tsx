@@ -66,7 +66,11 @@ const App = () => {
       // 自动滑动到最底部
       if (messageDiv) {
         scrollCacheRef.current.type = 'auto';
-        messageDiv.scrollTop = messageDiv.scrollHeight;
+        // messageDiv.scrollTop = messageDiv.scrollHeight;
+        messageDiv.scrollTo({
+          top: messageDiv.scrollHeight,
+          behavior: 'smooth',
+        });
         scrollCacheRef.current.type = 'manual';
       }
     }, 50);
