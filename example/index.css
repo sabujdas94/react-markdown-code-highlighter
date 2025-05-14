@@ -30,13 +30,21 @@ body {
 }
 
 .ds-message-list {
-  width: var(--message-list-max-width);
+  max-width: var(--message-list-max-width);
   margin: 0 auto;
+  padding: var(--message-list-padding-horizontal);
+}
+
+@media (min-width: 800px) {
+  .ds-message-actions {
+    width: var(--message-list-max-width);
+  }
 }
 
 .ds-message-actions {
   padding: 30px;
-  width: var(--message-list-max-width);
+  max-width: var(--message-list-max-width);
+  padding: var(--message-list-padding-horizontal);
   margin: 0 auto;
   button {
     padding: 10px 20px;
