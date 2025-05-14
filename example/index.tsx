@@ -46,9 +46,11 @@ const App = () => {
   const scrollCacheRef = useRef<{
     type: 'manual' | 'auto';
     needAutoScroll: boolean;
+    prevScrollTop: number;
   }>({
     type: 'manual',
     needAutoScroll: true,
+    prevScrollTop: 0,
   });
 
   const onClick = () => {
@@ -65,21 +67,22 @@ const App = () => {
       const messageDiv = messageDivRef.current;
       // 自动滑动到最底部
       if (messageDiv) {
-        scrollCacheRef.current.type = 'auto';
-        // messageDiv.scrollTop = messageDiv.scrollHeight;
         messageDiv.scrollTo({
           top: messageDiv.scrollHeight,
           behavior: 'smooth',
         });
-        scrollCacheRef.current.type = 'manual';
       }
     }, 50);
   }, []);
 
-  const onScroll = useMemo(() => {
-    // if (scrollCacheRef.current.type === 'auto') return;
-    // scrollCacheRef.current.needAutoScroll = false;
-  }, []);
+  const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    // 如果是往上滚动，则说明是手动滚动，则需要停止自动向下滚动
+    // console.log(e.currentTarget.scrollTop - scrollCacheRef.current.prevScrollTop);
+    if (e.currentTarget.scrollTop < scrollCacheRef.current.prevScrollTop) {
+      scrollCacheRef.current.needAutoScroll = false;
+    }
+    scrollCacheRef.current.prevScrollTop = e.currentTarget.scrollTop;
+  };
 
   return (
     <div className="ds-message">
@@ -89,7 +92,7 @@ const App = () => {
       <div className="ds-message-box" ref={messageDivRef} onScroll={onScroll}>
         <div className="ds-message-list">
           <Markdown
-            interval={5}
+            interval={10}
             answerType="thinking"
             onEnd={(args) => {
               // console.log('思考完成', args);
@@ -110,7 +113,7 @@ const App = () => {
 
           {answerContent && (
             <Markdown
-              interval={5}
+              interval={10}
               answerType="answer"
               // onEnd={(args) => {
               //   console.log('思考完成', args);
