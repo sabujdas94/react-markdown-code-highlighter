@@ -26,7 +26,7 @@ export interface MarkdownProps {
   /** 是否关闭匀速打字机效果 */
   isClosePrettyTyped?: boolean;
   /** 打字完成后回调,  */
-  onEnd?: (data?: { str: string; answerType: AnswerType }) => void;
+  onEnd?: (data?: { str?: string; answerType?: AnswerType }) => void;
   /** 开始打字回调 */
   onStart?: (data?: { currentIndex: number; currentChar: string; answerType: AnswerType; prevStr: string }) => void;
   /**
