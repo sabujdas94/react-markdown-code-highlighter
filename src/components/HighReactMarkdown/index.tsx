@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import Markdown from 'react-markdown';
 import type { Options } from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import style from 'react-syntax-highlighter/dist/esm/styles/prism/coy';
 import gfmPlugin from 'remark-gfm';
 
 import BlockWrap from '../BlockWrap/index.js';
@@ -21,7 +20,7 @@ const HighReactMarkdown: React.FC<HighReactMarkdownProps> = (props) => {
           const match = /language-(\w+)/.exec(className || '');
           return match ? (
             <BlockWrap language={match[1]}>
-              <SyntaxHighlighter useInlineStyles={false} language={match[1]} style={style}>
+              <SyntaxHighlighter useInlineStyles={false} language={match[1]}>
                 {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter>
               {/* <Highlighter>{String(children).replace(/\n$/, '')}</Highlighter> */}
