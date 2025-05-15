@@ -3,6 +3,7 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState }
 import HighReactMarkdown from '../components/HighReactMarkdown/index.js';
 import classNames from 'classnames';
 import { AnswerType, IParagraph, MarkdownProps } from '../defined.js';
+import { __DEV__ } from '../constant.js';
 
 type MarkdownCMDProps = MarkdownProps;
 
@@ -14,10 +15,17 @@ interface IChar {
 export interface MarkdownRef {
   push: (content: string, answerType: AnswerType) => void;
   clear: () => void;
+  triggerWholeEnd: () => void;
 }
 const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, isClosePrettyTyped = false, onEnd, onStart, onTypedChar }, ref) => {
   /** 当前需要打字的内容 */
   const charsRef = useRef<IChar[]>([]);
+
+  /**
+   * 打字是否已经完全结束
+   * 如果打字已经完全结束，则不会再触发打字效果
+   */
+  const isWholeTypedEndRef = useRef(false);
 
   /** 已经打过的字 */
   const typedCharsRef = useRef<{ typedContent: string; answerType: AnswerType; prevStr: string } | undefined>(undefined);
@@ -60,6 +68,11 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
   const thinkingParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'thinking'), [stableParagraphs]);
   const answerParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'answer'), [stableParagraphs]);
 
+  /**
+   * 记录打过的字
+   * @param char 当前字符
+   * @returns
+   */
   const recordTypedChars = (char: IChar) => {
     let prevStr = '';
     if (!typedCharsRef.current || typedCharsRef.current.answerType !== char.answerType) {
@@ -255,6 +268,12 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
 
   useImperativeHandle(ref, () => ({
     push: (content: string, answerType: AnswerType) => {
+      if (isWholeTypedEndRef.current) {
+        if (__DEV__) {
+          console.warn('打字已经完全结束，不能再添加新的内容');
+        }
+        return;
+      }
       // 如果两个\n,则\n这两个字符要合一起，作为一个字符处理,并且把多个\n处理成一个\n
       const charsGroup = content.split('\n\n');
       charsGroup.forEach((chars, index) => {
@@ -277,6 +296,11 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       charsRef.current = [];
       setStableParagraphs([]);
       setCurrentParagraph(undefined);
+      isWholeTypedEndRef.current = false;
+    },
+    triggerWholeEnd: () => {
+      isWholeTypedEndRef.current = true;
+      triggerOnEnd();
     },
   }));
 
