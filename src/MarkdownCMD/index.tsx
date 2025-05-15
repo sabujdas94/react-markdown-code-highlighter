@@ -300,7 +300,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     },
     triggerWholeEnd: () => {
       isWholeTypedEndRef.current = true;
-      if (charsRef.current.length === 0) {
+      if (!isTypedRef.current) {
         triggerOnEnd();
       }
     },
