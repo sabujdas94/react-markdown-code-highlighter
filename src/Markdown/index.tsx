@@ -20,9 +20,6 @@ const MarkdownInner: React.FC<MarkdownImplProps> = ({ children: _children = '', 
     }
     return '';
   }, [_children]);
-  // console.log('content', content);
-
-  console.log('render');
 
   useEffect(() => {
     if (prefixRef.current !== content) {
