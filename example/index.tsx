@@ -75,14 +75,16 @@ const App = () => {
     }, 50);
   }, []);
 
-  const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    // 如果是往上滚动，则说明是手动滚动，则需要停止自动向下滚动
-    // console.log(e.currentTarget.scrollTop - scrollCacheRef.current.prevScrollTop);
-    if (e.currentTarget.scrollTop < scrollCacheRef.current.prevScrollTop) {
-      scrollCacheRef.current.needAutoScroll = false;
-    }
-    scrollCacheRef.current.prevScrollTop = e.currentTarget.scrollTop;
-  };
+  const onScroll = useMemo(() => {
+    return throttle((e: React.UIEvent<HTMLDivElement>) => {
+      // 如果是往上滚动，则说明是手动滚动，则需要停止自动向下滚动
+      // console.log(e.currentTarget.scrollTop - scrollCacheRef.current.prevScrollTop);
+      if (e.currentTarget.scrollTop < scrollCacheRef.current.prevScrollTop) {
+        scrollCacheRef.current.needAutoScroll = false;
+      }
+      scrollCacheRef.current.prevScrollTop = e.currentTarget.scrollTop;
+    }, 50);
+  }, []);
 
   return (
     <div className="ds-message">
