@@ -23,7 +23,6 @@ const HighReactMarkdown: React.FC<HighReactMarkdownProps> = (props) => {
               <SyntaxHighlighter useInlineStyles={false} language={match[1]}>
                 {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter>
-              {/* <Highlighter>{String(children).replace(/\n$/, '')}</Highlighter> */}
             </BlockWrap>
           ) : (
             <code className={className} {...props}>
