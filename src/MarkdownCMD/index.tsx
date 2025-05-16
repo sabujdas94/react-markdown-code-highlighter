@@ -44,12 +44,20 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
   const onTypedCharRef = useRef(onTypedChar);
   onTypedCharRef.current = onTypedChar;
 
+  /** 打字定时器 */
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  /**
+   * 稳定段落
+   * 稳定段落是已经打过字，并且不会再变化的段落
+   */
   const [stableParagraphs, setStableParagraphs] = useState<IParagraph[]>([]);
+  /** 当前段落 */
   const [currentParagraph, setCurrentParagraph] = useState<IParagraph | undefined>(undefined);
+  /** 当前段落引用 */
   const currentParagraphRef = useRef<IParagraph | undefined>(undefined);
   currentParagraphRef.current = currentParagraph;
 
+  /** 清除打字定时器 */
   const clearTimer = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -65,7 +73,9 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     };
   }, []);
 
+  /** 思考段落 */
   const thinkingParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'thinking'), [stableParagraphs]);
+  /** 回答段落 */
   const answerParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'answer'), [stableParagraphs]);
 
   /**
@@ -148,6 +158,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     });
   };
 
+  /** 开始打字任务 */
   const startTypedTask = () => {
     if (isTypedRef.current) {
       return;
@@ -155,6 +166,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
 
     const chars = charsRef.current;
 
+    /** 停止打字 */
     const stopTyped = () => {
       isTypedRef.current = false;
       if (timerRef.current) {
@@ -164,13 +176,14 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       triggerOnEnd();
     };
 
-    function nextTyped() {
+    /** 打下一个字 */
+    const nextTyped = () => {
       if (chars.length === 0) {
         stopTyped();
         return;
       }
       timerRef.current = setTimeout(startTyped, interval);
-    }
+    };
 
     /**
      * 开始打字
@@ -267,6 +280,11 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
   };
 
   useImperativeHandle(ref, () => ({
+    /**
+     * 添加内容
+     * @param content 内容 {string}
+     * @param answerType 回答类型 {AnswerType}
+     */
     push: (content: string, answerType: AnswerType) => {
       if (isWholeTypedEndRef.current) {
         if (__DEV__) {
@@ -291,6 +309,9 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         startTypedTask();
       }
     },
+    /**
+     * 清除打字任务
+     */
     clear: () => {
       clearTimer();
       charsRef.current = [];
@@ -298,9 +319,14 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       setCurrentParagraph(undefined);
       isWholeTypedEndRef.current = false;
     },
+    /**
+     * 主动触发打字结束
+     */
     triggerWholeEnd: () => {
       isWholeTypedEndRef.current = true;
-      triggerOnEnd();
+      if (!isTypedRef.current) {
+        triggerOnEnd();
+      }
     },
   }));
 
