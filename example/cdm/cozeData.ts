@@ -1,4 +1,4 @@
-event:conversation.chat.created
+const data = `event:conversation.chat.created
 data:{"id":"7507152942412283930","conversation_id":"7507152932924669963","bot_id":"7497176623146811392","created_at":1747895253,"last_error":{"code":0,"msg":""},"status":"created","usage":{"token_count":0,"output_count":0,"input_count":0},"section_id":"7507152932924669963"}
 
 event:conversation.chat.in_progress
@@ -3562,3 +3562,6 @@ data:{"id":"7507152942412283930","conversation_id":"7507152932924669963","bot_id
 event:done
 data:"[DONE]"
 
+`;
+
+export default data;

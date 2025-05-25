@@ -1,5 +1,9 @@
 import React from 'react';
 
+// 导入 ./cozeData.text
+
+import cozeData from './cozeData';
+
 interface CMDDemoProps {
   id?: number;
 }
