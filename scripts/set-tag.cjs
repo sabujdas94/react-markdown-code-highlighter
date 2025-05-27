@@ -16,6 +16,8 @@ if (currentBranch === 'main') {
   // 0.0.7-beta.x -> 0.0.7
   if (version.includes('beta')) {
     packageData.version = version.split('-')[0];
+  } else {
+    packageData.version = version.split('.')[0] + '.' + parseInt(version.split('.')[1]) + '.' + (parseInt(version.split('.')[2]) + 1);
   }
 } else {
   packageData.publishConfig = { tag: 'beta' };

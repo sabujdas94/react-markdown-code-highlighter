@@ -40,8 +40,8 @@
     "build:less": "lessc src/style.less dist/style.css",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepublish": "npm run build",
-    "prepublishOnly": "npm run build && node scripts/set-tag.cjs"
+    "release": "npm run build && node scripts/set-tag.cjs && cross-env RELEASE_MODE=true npm publish",
+    "prepublishOnly": "node scripts/prepublish.js"
   },
   "dependencies": {
     "classnames": "^2.5.1",
@@ -66,6 +66,7 @@
     "@types/react-dom": "^19.1.2",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^4.4.1",
+    "cross-env": "^7.0.3",
     "eslint": "^9.25.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-compat": "^6.0.2",
