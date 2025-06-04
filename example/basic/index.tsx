@@ -2,7 +2,7 @@ import { StrictMode, useCallback, useEffect, useMemo, useRef, useState } from 'r
 import { createRoot } from 'react-dom/client';
 
 import Markdown from '../../src';
-import json from './data2.json';
+import json from './data.json';
 
 function throttle(fn: (...args: any[]) => void, delay: number) {
   let lastTime = 0;
