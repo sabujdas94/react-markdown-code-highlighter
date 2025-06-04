@@ -40,7 +40,7 @@ export class Tokenizer {
   }
   /** 块 */
   segment(src: string): Segment | undefined {
-    const cap = rules.block.exec(src);
+    const cap = rules.segment.exec(src);
     if (cap) {
       return {
         type: 'segment',

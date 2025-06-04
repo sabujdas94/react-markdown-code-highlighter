@@ -1,0 +1,25 @@
+{
+  "message_id": 2,
+  "parent_id": 1,
+  "model": "",
+  "role": "ASSISTANT",
+  "content": "# heading\n\n this is paragraph\n\n[link](https://www.google.com)\n\n```javascript\n\nconsole.log('hello');\n```\n\n> blockquote\n\n",
+  "thinking_elapsed_secs": 19,
+  "thinking_content": "x",
+  "ban_edit": false,
+  "ban_regenerate": false,
+  "status": "FINISHED",
+  "accumulated_token_usage": 868,
+  "files": [],
+  "tips": [
+    {
+      "type": "warning",
+      "position": "bottom",
+      "content": "本回答由 AI 生成，内容仅供参考，请仔细甄别。"
+    }
+  ],
+  "inserted_at": 1746086789.538057,
+  "search_enabled": false,
+  "search_status": null,
+  "search_results": null
+}
