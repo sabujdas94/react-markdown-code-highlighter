@@ -1,4 +1,4 @@
-import { compiler } from '../../src/utils/compiler';
+import { compiler } from '../../dist/esm/utils/compiler.js';
 
 describe('Compiler', () => {
   test('should handle empty string', () => {
