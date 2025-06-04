@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
-import HighReactMarkdown from '../components/HighReactMarkdown/index.js';
+import HighReactMarkdown from '../components/HighReactMarkdown/index';
 import classNames from 'classnames';
 import { AnswerType, IParagraph, MarkdownProps } from '../defined.js';
 import { compiler } from '../utils/compiler.js';

@@ -1,4 +1,4 @@
-import { Token, Tokenizer } from './Tokenizer.js';
+import { Token, Tokenizer } from './Tokenizer';
 
 function compile(src: string) {
   const tokenizer = new Tokenizer();
@@ -10,6 +10,12 @@ function compile(src: string) {
     if (space) {
       tokens.push(space);
       src = src.slice(space.raw.length);
+      continue;
+    }
+    const list = tokenizer.list(src);
+    if (list) {
+      tokens.push(list);
+      src = src.slice(list.raw.length);
       continue;
     }
     const fence = tokenizer.fence(src);
