@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
+
+// Example ThemeContext, replace with your actual context import if different
+const ThemeContext = React.createContext<'light' | 'dark'>('light');
 
 interface BlockWrapProps {
   children: React.ReactNode;
@@ -6,13 +9,26 @@ interface BlockWrapProps {
 }
 
 const BlockWrap: React.FC<BlockWrapProps> = ({ children, language }) => {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsDark(window.localStorage.getItem('vite-ui-theme') === 'dark');
+    }
+  }, []);
+
+  const blockClass = useMemo(
+    () => `md-code-block ${isDark ? 'md-code-block-dark' : 'md-code-block-light'}`,
+    [isDark]
+  );
+
   return (
-    <div className="md-code-block md-code-block-light">
+    <div className={blockClass}>
       <div className="md-code-block-banner-wrap">
         <div className="md-code-block-banner md-code-block-banner-lite">
           <div className="md-code-block-banner-content">
             <div className="md-code-block-language">{language}</div>
-            {/* <div className="md-code-block-copy">复制</div> */}
+            {/* <div className="md-code-block-copy">Copy</div> */}
           </div>
         </div>
       </div>
@@ -21,4 +37,4 @@ const BlockWrap: React.FC<BlockWrapProps> = ({ children, language }) => {
   );
 };
 
-export default BlockWrap;
+export default React.memo(BlockWrap);

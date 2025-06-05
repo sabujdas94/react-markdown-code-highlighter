@@ -2,8 +2,7 @@
   "extends": "./tsconfig-base.json",
   "compilerOptions": {
     "outDir": "./dist/esm",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext"
+    "module": "ES2020"
   },
   "include": ["src"],
   "exclude": ["**/*.test.*"]

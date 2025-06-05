@@ -1,5 +1,3 @@
-
-
 export enum CozeMessageEnum {
   Created = 'event:conversation.chat.created',
   InProgress = 'event:conversation.chat.in_progress',
@@ -29,7 +27,7 @@ export interface CozeMessageDataI extends CozeResultI {
   role?: 'user' | 'assistant';
 
   /**
-   * 推理思考过程
+   * Reasoning/thinking process
    */
   reasoning_content?: string;
   type?: 'answer';

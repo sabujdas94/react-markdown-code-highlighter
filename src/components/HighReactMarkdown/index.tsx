@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
 import Markdown from 'react-markdown';
 import type { Options } from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
 import gfmPlugin from 'remark-gfm';
 
 import BlockWrap from '../BlockWrap/index.js';
@@ -18,17 +19,27 @@ const HighReactMarkdown: React.FC<HighReactMarkdownProps> = (props) => {
       components={{
         code: ({ className, children, ...props }) => {
           const match = /language-(\w+)/.exec(className || '');
-          return match ? (
-            <BlockWrap language={match[1]}>
-              <SyntaxHighlighter useInlineStyles={false} language={match[1]}>
-                {String(children).replace(/\n$/, '')}
-              </SyntaxHighlighter>
-            </BlockWrap>
-          ) : (
-            <code className={className} {...props}>
-              {children}
-            </code>
-          );
+          if (match) {
+            const language = match[1];
+            const code = String(children).replace(/\n$/, '');
+            const highlighted = hljs.getLanguage(language)
+              ? hljs.highlight(code, { language }).value
+              : hljs.highlightAuto(code).value;
+            return (
+              <BlockWrap language={language}>
+                <pre
+                  className={`hljs language-${language}`}
+                  dangerouslySetInnerHTML={{ __html: highlighted }}
+                />
+              </BlockWrap>
+            );
+          } else {
+            return (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            );
+          }
         },
         table: ({ children, ...props }) => {
           return (

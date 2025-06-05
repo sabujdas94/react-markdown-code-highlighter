@@ -5,13 +5,8 @@ import '../src/style.less';
 import './index.css';
 
 import BasicDemo from './basic';
-import CDMDemo from './cmd';
 const App = () => {
-  return (
-    <div className="ds-message">
-      <CDMDemo />
-    </div>
-  );
+  return <BasicDemo />;
 };
 
 createRoot(document.getElementById('root')!).render(

@@ -3,7 +3,6 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState }
 import HighReactMarkdown from '../components/HighReactMarkdown/index.js';
 import classNames from 'classnames';
 import { AnswerType, IParagraph, MarkdownProps } from '../defined.js';
-import { compiler } from '../utils/compiler.js';
 import { __DEV__ } from '../constant.js';
 
 type MarkdownCMDProps = MarkdownProps;
@@ -11,7 +10,6 @@ type MarkdownCMDProps = MarkdownProps;
 interface IChar {
   content: string;
   answerType: AnswerType;
-  contentType: 'space' | 'segment';
 }
 
 export interface MarkdownRef {
@@ -20,46 +18,46 @@ export interface MarkdownRef {
   triggerWholeEnd: () => void;
 }
 const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, isClosePrettyTyped = false, onEnd, onStart, onTypedChar }, ref) => {
-  /** 当前需要打字的内容 */
+  /** Current content to be typed */
   const charsRef = useRef<IChar[]>([]);
 
   /**
-   * 打字是否已经完全结束
-   * 如果打字已经完全结束，则不会再触发打字效果
+   * Whether typing is completely over
+   * If typing is completely over, the typing effect will not be triggered again
    */
   const isWholeTypedEndRef = useRef(false);
 
-  /** 已经打过的字 */
+  /** Already typed characters */
   const typedCharsRef = useRef<{ typedContent: string; answerType: AnswerType; prevStr: string } | undefined>(undefined);
-  /** 是否卸载 */
+  /** Whether the component is unmounted */
   const isUnmountRef = useRef(false);
-  /** 是否正在打字 */
+  /** Whether typing is in progress */
   const isTypedRef = useRef(false);
 
-  /** 打字结束回调, */
+  /** Typing end callback */
   const onEndRef = useRef(onEnd);
   onEndRef.current = onEnd;
-  /** 打字开始回调 */
+  /** Typing start callback */
   const onStartRef = useRef(onStart);
   onStartRef.current = onStart;
-  /** 打字过程中回调 */
+  /** Typing character callback */
   const onTypedCharRef = useRef(onTypedChar);
   onTypedCharRef.current = onTypedChar;
 
-  /** 打字定时器 */
+  /** Typing timer */
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   /**
-   * 稳定段落
-   * 稳定段落是已经打过字，并且不会再变化的段落
+   * Stable paragraphs
+   * Stable paragraphs are those that have been typed and will not change again
    */
-  const [stableSegments, setStableSegments] = useState<IParagraph[]>([]);
-  /** 当前段落 */
-  const [currentSegment, setCurrentSegment] = useState<IParagraph | undefined>(undefined);
-  /** 当前段落引用 */
+  const [stableParagraphs, setStableParagraphs] = useState<IParagraph[]>([]);
+  /** Current paragraph */
+  const [currentParagraph, setCurrentParagraph] = useState<IParagraph | undefined>(undefined);
+  /** Current paragraph reference */
   const currentParagraphRef = useRef<IParagraph | undefined>(undefined);
-  currentParagraphRef.current = currentSegment;
+  currentParagraphRef.current = currentParagraph;
 
-  /** 清除打字定时器 */
+  /** Clear typing timer */
   const clearTimer = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -75,14 +73,14 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     };
   }, []);
 
-  /** 思考段落 */
-  const thinkingParagraphs = useMemo(() => stableSegments.filter((paragraph) => paragraph.answerType === 'thinking'), [stableSegments]);
-  /** 回答段落 */
-  const answerParagraphs = useMemo(() => stableSegments.filter((paragraph) => paragraph.answerType === 'answer'), [stableSegments]);
+  /** Thinking paragraphs */
+  const thinkingParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'thinking'), [stableParagraphs]);
+  /** Answer paragraphs */
+  const answerParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'answer'), [stableParagraphs]);
 
   /**
-   * 记录打过的字
-   * @param char 当前字符
+   * Record typed characters
+   * @param char Current character
    * @returns
    */
   const recordTypedChars = (char: IChar) => {
@@ -106,8 +104,8 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
   };
 
   /**
-   * 触发打字开始回调
-   * @param char 当前字符
+   * Trigger typing start callback
+   * @param char Current character
    */
   const triggerOnStart = (char: IChar) => {
     const onStartFn = onStartRef.current;
@@ -124,7 +122,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
   };
 
   /**
-   * 触发打字结束回调
+   * Trigger typing end callback
    */
   const triggerOnEnd = () => {
     const onEndFn = onEndRef.current;
@@ -139,9 +137,9 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
   };
 
   /**
-   * 触发打字过程中回调
-   * @param char 当前字符
-   * @param isStartPoint 是否是开始打字(第一个字)
+   * Trigger typing character callback
+   * @param char Current character
+   * @param isStartPoint Whether it is the start of typing (the first character)
    */
   const triggerOnTypedChar = (char: IChar, isStartPoint = false) => {
     const onTypedCharFn = onTypedCharRef.current;
@@ -160,7 +158,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     });
   };
 
-  /** 开始打字任务 */
+  /** Start typing task */
   const startTypedTask = () => {
     if (isTypedRef.current) {
       return;
@@ -168,7 +166,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
 
     const chars = charsRef.current;
 
-    /** 停止打字 */
+    /** Stop typing */
     const stopTyped = () => {
       isTypedRef.current = false;
       if (timerRef.current) {
@@ -178,7 +176,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       triggerOnEnd();
     };
 
-    /** 打下一个字 */
+    /** Type next character */
     const nextTyped = () => {
       if (chars.length === 0) {
         stopTyped();
@@ -188,8 +186,8 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     };
 
     /**
-     * 开始打字
-     * @param isStartPoint 是否是开始打字
+     * Start typing
+     * @param isStartPoint Whether it is the start of typing
      */
     function startTyped(isStartPoint = false) {
       if (isUnmountRef.current) {
@@ -210,14 +208,14 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         triggerOnTypedChar(char);
       }
 
-      const currentSegment = currentParagraphRef.current;
-      /** 如果碰到 space 则需要处理成两个段落 */
-      if (char.contentType === 'space') {
-        if (currentSegment) {
-          setStableSegments((prev) => {
+      const currentParagraph = currentParagraphRef.current;
+      /** If encountered, need to handle as two paragraphs */
+      if (char.content === '\n\n') {
+        if (currentParagraph) {
+          setStableParagraphs((prev) => {
             const newParagraphs = [...prev];
-            if (currentSegment) {
-              newParagraphs.push({ ...currentSegment, isTyped: false });
+            if (currentParagraph) {
+              newParagraphs.push({ ...currentParagraph, isTyped: false });
             }
             newParagraphs.push({
               content: '',
@@ -227,9 +225,9 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
             });
             return newParagraphs;
           });
-          setCurrentSegment(undefined);
+          setCurrentParagraph(undefined);
         } else {
-          setStableSegments((prev) => {
+          setStableParagraphs((prev) => {
             const newParagraphs = [...prev];
             newParagraphs.push({
               content: '',
@@ -244,8 +242,8 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         return;
       }
 
-      // 处理当前段落
-      let _currentParagraph = currentSegment;
+      // Handle current paragraph
+      let _currentParagraph = currentParagraph;
       const newCurrentParagraph: IParagraph = {
         content: '',
         isTyped: false,
@@ -254,20 +252,20 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       };
 
       if (!_currentParagraph) {
-        // 如果当前没有段落，则直接设置为当前段落
+        // If there is no current paragraph, set as current paragraph
         _currentParagraph = newCurrentParagraph;
-      } else if (currentSegment && currentSegment?.answerType !== char.answerType) {
-        // 如果当前段落和当前字符的回答类型不一致，则需要处理成两个段落
-        setStableSegments((prev) => {
+      } else if (currentParagraph && currentParagraph?.answerType !== char.answerType) {
+        // If the current paragraph and character answerType are different, handle as two paragraphs
+        setStableParagraphs((prev) => {
           const newParagraphs = [...prev];
-          newParagraphs.push({ ...currentSegment, isTyped: false });
+          newParagraphs.push({ ...currentParagraph, isTyped: false });
           return newParagraphs;
         });
         _currentParagraph = newCurrentParagraph;
-        setCurrentSegment(_currentParagraph);
+        setCurrentParagraph(_currentParagraph);
       }
 
-      setCurrentSegment((prev) => {
+      setCurrentParagraph((prev) => {
         return {
           ..._currentParagraph,
           content: (prev?.content || '') + char.content,
@@ -281,48 +279,29 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     startTyped(true);
   };
 
-  const lastSegmentRaw = useRef('');
-
   useImperativeHandle(ref, () => ({
     /**
-     * 添加内容
-     * @param content 内容 {string}
-     * @param answerType 回答类型 {AnswerType}
+     * Add content
+     * @param content Content {string}
+     * @param answerType Answer type {AnswerType}
      */
     push: (content: string, answerType: AnswerType) => {
       if (isWholeTypedEndRef.current) {
         if (__DEV__) {
-          console.warn('打字已经完全结束，不能再添加新的内容');
+          console.warn('Typing is already complete, unable to add new content');
         }
         return;
       }
-      if (!lastSegmentRaw.current) {
-        lastSegmentRaw.current = content;
-      } else {
-        lastSegmentRaw.current += content;
-      }
-
-      let resetLastSegmentRaw = false;
-      const tokens = compiler(lastSegmentRaw.current);
-
-      // 如果最后一个token是segment，则把最后一个token的raw赋值给lastSegmentRaw
-      if (['segment'].includes(tokens[tokens.length - 1].type)) {
-        // todo: 处理segment
-      } else if (tokens[tokens.length - 1].type === 'space') {
-        lastSegmentRaw.current = '';
-        resetLastSegmentRaw = true;
-      } else {
-        lastSegmentRaw.current = tokens[tokens.length - 1].raw;
-        resetLastSegmentRaw = true;
-      }
-
-      console.log(lastSegmentRaw.current);
-
-      tokens.forEach((token) => {
-        if (token.type === 'space') {
-          charsRef.current.push({ content: content, answerType, contentType: 'space' });
-        } else if (token.type === 'segment') {
-          charsRef.current.push(...(content.split('').map((char) => ({ content: char, answerType, contentType: 'segment' })) as IChar[]));
+      // If there are two \n, treat them as one character, and merge multiple \n into one \n
+      const charsGroup = content.split('\n\n');
+      charsGroup.forEach((chars, index) => {
+        if (isClosePrettyTyped) {
+          charsRef.current.push({ content: chars, answerType });
+        } else {
+          charsRef.current.push(...chars.split('').map((char) => ({ content: char, answerType })));
+        }
+        if (index !== charsGroup.length - 1) {
+          charsRef.current.push({ content: '\n\n', answerType });
         }
       });
 
@@ -331,17 +310,17 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       }
     },
     /**
-     * 清除打字任务
+     * Clear typing task
      */
     clear: () => {
       clearTimer();
       charsRef.current = [];
-      setStableSegments([]);
-      setCurrentSegment(undefined);
+      setStableParagraphs([]);
+      setCurrentParagraph(undefined);
       isWholeTypedEndRef.current = false;
     },
     /**
-     * 主动触发打字结束
+     * Manually trigger typing end
      */
     triggerWholeEnd: () => {
       isWholeTypedEndRef.current = true;
@@ -360,7 +339,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
           }
           return <HighReactMarkdown key={index}>{paragraph.content || ''}</HighReactMarkdown>;
         })}
-        {currentSegment?.answerType === answerType && <HighReactMarkdown key={currentSegment.content}>{currentSegment.content || ''}</HighReactMarkdown>}
+        {currentParagraph?.answerType === answerType && <HighReactMarkdown key={currentParagraph.content}>{currentParagraph.content || ''}</HighReactMarkdown>}
       </div>
     );
   };
@@ -372,8 +351,8 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         apple: true,
       })}
     >
-      {(thinkingParagraphs.length > 0 || currentSegment?.answerType === 'thinking') && <div className="ds-markdown-thinking">{getParagraphs(thinkingParagraphs, 'thinking')}</div>}
-      {(answerParagraphs.length > 0 || currentSegment?.answerType === 'answer') && <div className="ds-markdown-answer">{getParagraphs(answerParagraphs, 'answer')}</div>}
+      {(thinkingParagraphs.length > 0 || currentParagraph?.answerType === 'thinking') && <div className="ds-markdown-thinking">{getParagraphs(thinkingParagraphs, 'thinking')}</div>}
+      {(answerParagraphs.length > 0 || currentParagraph?.answerType === 'answer') && <div className="ds-markdown-answer">{getParagraphs(answerParagraphs, 'answer')}</div>}
     </div>
   );
 });

@@ -7,20 +7,20 @@ export function parseSSEData(rawData: string) {
 
   for (const line of lines) {
     const trimmedLine = line.trim();
-    if (!trimmedLine) continue; // 忽略空行
+    if (!trimmedLine) continue; // Ignore empty lines
 
-    // 解析 event 行
+    // Parse event line
     if (trimmedLine.startsWith('event:')) {
       currentEvent.type = trimmedLine.trim() as CozeMessageEnum;
     } else if (trimmedLine.startsWith('data:')) {
-      // 解析 data 行
+      // Parse data line
       try {
         const jsonString = trimmedLine.slice(5).trim();
         currentEvent.data = JSON.parse(jsonString);
-        events.push(currentEvent as CozeMessageI); // 保存完整事件
-        currentEvent = {}; // 重置临时对象
+        events.push(currentEvent as CozeMessageI); // Save complete event
+        currentEvent = {}; // Reset temporary object
       } catch (e) {
-        console.error('JSON 解析失败:', e);
+        console.error('JSON parse failed:', e);
       }
     }
   }

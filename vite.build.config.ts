@@ -7,13 +7,13 @@ export default defineConfig({
   build: {
     lib: {
       entry: 'src/index.tsx',
-      name: 'MyLib', // 你的库名
+      name: 'MyLib', // Your library name
       fileName: (format) => `my-lib.${format}.js`,
-      formats: ['es', 'cjs'], // 输出格式
+      formats: ['es', 'cjs'], // Output formats
     },
     rollupOptions: {
-      // 确保外部化处理你不想打包进库的依赖
-      external: ['react', 'react-dom', 'remark-gfm', 'react-markdown', 'react-syntax-highlighter'],
+      // Make sure to externalize dependencies you do not want to bundle into your library
+      external: ['react', 'react-dom', 'remark-gfm', 'react-markdown', 'highlight.js'],
       output: {
         globals: {
           react: 'React',

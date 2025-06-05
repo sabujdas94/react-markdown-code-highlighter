@@ -42,7 +42,7 @@ const BasicDemo = () => {
     return throttle(() => {
       if (!scrollCacheRef.current.needAutoScroll) return;
       const messageDiv = messageDivRef.current;
-      // 自动滑动到最底部
+      // Automatically scroll to the bottom
       if (messageDiv) {
         messageDiv.scrollTo({
           top: messageDiv.scrollHeight,
@@ -54,7 +54,7 @@ const BasicDemo = () => {
 
   const onScroll = useMemo(() => {
     return throttle((e: React.UIEvent<HTMLDivElement>) => {
-      // 如果是往上滚动，则说明是手动滚动，则需要停止自动向下滚动
+      // If scrolling up, it means the user is manually scrolling, so stop the auto-scroll
       // console.log(e.currentTarget.scrollTop - scrollCacheRef.current.prevScrollTop);
       if (e.currentTarget.scrollTop < scrollCacheRef.current.prevScrollTop) {
         scrollCacheRef.current.needAutoScroll = false;
@@ -64,26 +64,26 @@ const BasicDemo = () => {
   }, []);
 
   return (
-    <>
+    <div className="ds-message">
       <div className="ds-message-actions">
-        {thinkingContent ? <button onClick={onReset}>重置</button> : <button onClick={onClick}>点击显示</button>} <span style={{ marginLeft: 30 }}>React 19有哪些新特性</span>
+        {thinkingContent ? <button onClick={onReset}>Reset</button> : <button onClick={onClick}>Show</button>} <span style={{ marginLeft: 30 }}>What are the new features in React 19?</span>
       </div>
       <div className="ds-message-box" ref={messageDivRef} onScroll={onScroll}>
         <div className="ds-message-list">
           <Markdown
-            interval={10}
-            answerType="thinking"
+            interval={0}
+            answerType="answer"
             onEnd={(args) => {
-              // console.log('思考完成', args);
+              // console.log('Thinking finished', args);
               if (thinkingContent) {
                 setAnswerContent(json.content);
               }
             }}
             // onStart={(args) => {
-            //   console.log('思考开始', args);
+            //   console.log('Thinking started', args);
             // }}
             // onTypedChar={(args) => {
-            //   console.log('打字中', args);
+            //   console.log('Typing', args);
             // }}
             onTypedChar={throttleOnTypedChar}
           >
@@ -92,19 +92,19 @@ const BasicDemo = () => {
 
           {answerContent && (
             <Markdown
-              interval={10}
+              interval={0}
               answerType="answer"
               // onEnd={(args) => {
-              //   console.log('思考完成', args);
+              //   console.log('Thinking finished', args);
               //   if (thinkingContent) {
               //     setAnswerContent(json.content);
               //   }
               // }}
               // onStart={(args) => {
-              //   console.log('思考开始', args);
+              //   console.log('Thinking started', args);
               // }}
               // onTypedChar={(args) => {
-              //   console.log('打字中', args);
+              //   console.log('Typing', args);
               // }}
               onTypedChar={throttleOnTypedChar}
             >
@@ -113,7 +113,7 @@ const BasicDemo = () => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

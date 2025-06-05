@@ -16,7 +16,7 @@ const MarkdownInner: React.FC<MarkdownImplProps> = ({ children: _children = '', 
       return _children;
     }
     if (__DEV__) {
-      console.error('Markdown组件的子元素必须是一个字符串');
+      console.error('The child of Markdown component must be a string');
     }
     return '';
   }, [_children]);
@@ -47,10 +47,10 @@ const Markdown: React.FC<MarkdownImplProps> = (props) => {
 
   if (__DEV__) {
     if (!['thinking', 'answer'].includes(answerType)) {
-      throw new Error('Markdown组件的answerType必须是thinking或answer');
+      throw new Error('The answerType of Markdown component must be either "thinking" or "answer"');
     }
     if (typeof children !== 'string') {
-      throw new Error('Markdown组件的子元素必须是一个字符串');
+      throw new Error('The child of Markdown component must be a string');
     }
   }
 

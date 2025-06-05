@@ -1,40 +1,41 @@
-# ds-markdown
+# react-markdown-code-highlighter
 
-`ds-markdown`是一个[React](https://react.dev)组件, 类似[deepseek官网](https://chat.deepseek.com/)风格的 `Markdown`
+`react-markdown-code-highlighter` is a flexible [React](https://react.dev) component for rendering Markdown with syntax-highlighted code blocks using [highlight.js](https://highlightjs.org/). It is designed for use in chat systems and AI assistants like ChatGPT, Claude, DeepSeek, and any application that needs beautiful, performant Markdown rendering with code highlighting.
 
 [DEMO](https://onshinpei.github.io/ds-markdown/)
 
-## 特性
+## Features
 
-- 🦮 对`deepseek`官网的聊天响应效果进行了1:1还原
-- 🛠 自带打字效果
-- 🦮 内部封装了常用的`markdown`格式的文本显示
-- 🔤 对大文档进行了性能优化，进行分批处理，生成打字效果的时候不会对页面造成卡顿现象
+- 💬 Perfect for chat UIs and AI assistants (ChatGPT, Claude, DeepSeek, etc.)
+- 🖍 Syntax highlighting for code blocks via highlight.js
+- 🛠 Optional typing effect for streaming/AI responses
+- ⚡ Optimized for large documents and fast rendering
+- 📦 Easy integration with any React project
 
-## 安装
+## Installation
 
 ```bash
-npm install ds-markdown
+npm install react-markdown-code-highlighter
 ```
 
-<a href="https://www.npmjs.com/package/ds-markdown"><img src="https://img.shields.io/npm/v/ds-markdown" alt="npm version"/></a>
-<img src="https://img.shields.io/npm/dm/ds-markdown.svg" alt="npm downloads"/> <img src="https://img.shields.io/bundlephobia/minzip/ds-markdown" alt="Min gzipped size"/>
+<a href="https://www.npmjs.com/package/react-markdown-code-highlighter"><img src="https://img.shields.io/npm/v/react-markdown-code-highlighter" alt="npm version"/></a>
+<img src="https://img.shields.io/npm/dm/react-markdown-code-highlighter.svg" alt="npm downloads"/> <img src="https://img.shields.io/bundlephobia/minzip/react-markdown-code-highlighter" alt="Min gzipped size"/>
 
-## props
+## Props
 
-### 默认导出
+### Default Export
 
-| 属性名        | 类型                                                                                                     | 说明                                                                         | 默认值   |
-| ------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | -------- |
-| `interval`    | `number`                                                                                                 | 打字的速度`ms`                                                               | `30`     |
-| `answerType`  | `thinking` \| `answer`                                                                                   | `markdown`类型                                                               | `answer` |
-| `onEnd`       | `(data: { str: string; answerType: AnswerType }) => void`                                                | 打字结束后回调，**可能会触发多次，因为AI的响应可能是一段一段，间隔可能较久** | -        |
-| `onStart`     | `(data: { currentIndex: number; currentChar: string; answerType: AnswerType; prevStr: string }) => void` | 打字开始回调 **可能会触发多次**                                              | -        |
-| `onTypedChar` | `(data: { currentIndex: number; currentChar: string; answerType: AnswerType; prevStr: string }) => void` | 当前正在打字的回调                                                           | -        |
+| Name           | Type                                                                                                     | Description                                                                 | Default  |
+| -------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | -------- |
+| `interval`     | `number`                                                                                                 | Typing speed in milliseconds                                                | `30`     |
+| `answerType`   | `thinking` \| `answer`                                                                                   | Markdown type                                                               | `answer` |
+| `onEnd`        | `(data: { str: string; answerType: AnswerType }) => void`                                                | Callback after typing ends. **May trigger multiple times due to AI streaming** | -        |
+| `onStart`      | `(data: { currentIndex: number; currentChar: string; answerType: AnswerType; prevStr: string }) => void` | Callback when typing starts. **May trigger multiple times**                 | -        |
+| `onTypedChar`  | `(data: { currentIndex: number; currentChar: string; answerType: AnswerType; prevStr: string }) => void` | Callback for each character being typed                                     | -        |
 
-## 使用示例 - default export
+## Usage Example - Default Export
 
-[在线查看](https://stackblitz.com/edit/vitejs-vite-ddfw8avb?file=src%2FApp.tsx)
+[View Online](https://stackblitz.com/edit/vitejs-vite-ddfw8avb?file=src%2FApp.tsx)
 
 ```tsx
 import { useState } from 'react';
@@ -43,14 +44,14 @@ import 'ds-markdown/style.css';
 
 const markdown = `# ds-markdown
 
-\`ds-markdown\`是一个[React](https://react.dev)组件, 类似[deepseek官网](https://chat.deepseek.com/)风格的 \`Markdown\`
+\`ds-markdown\` is a [React](https://react.dev) component, similar in style to the deepseek official website \`Markdown\`
 
-## 特性
+## Features
 
-- 🦮 对`deepseek`官网的聊天响应效果进行了1:1还原
-- 🛠 自带打字效果
-- 🦮 内部封装了常用的\`markdown\`格式的文本显示
-- 🔤 对大文档进行了性能优化，进行分批处理，生成打字效果的时候不会对页面造成卡顿现象
+- 🦮 1:1 reproduction of the chat response effect from the deepseek official website
+- 🛠 Built-in typing effect
+- 🦮 Built-in common \`markdown\` text display
+- 🔤 Performance optimization for large documents: processes in batches to avoid UI lag when generating typing effects
 `;
 
 function App() {
@@ -58,19 +59,17 @@ function App() {
   const [answerContent, setAnswerContent] = useState('');
 
   const onClick = () => {
-    // 如果重复点击，则会清空之前的效果
-    setThinkingContent('这是我思考的内容，我已经思考完成，下面是我的答案');
+    // If clicked repeatedly, previous effects will be cleared
+    setThinkingContent('This is my thinking content. I have finished thinking, here is my answer.');
   };
 
-  console.log(answerContent);
   return (
     <div>
-      <button onClick={onClick}>点击显示文字效果</button>
+      <button onClick={onClick}>Show Typing Effect</button>
       <DsMarkdown
         answerType="thinking"
         interval={5}
         onEnd={() => {
-          console.log('思考完成');
           setAnswerContent(markdown);
         }}
       >
@@ -89,46 +88,47 @@ function App() {
 export default App;
 ```
 
-## 命令式示例
+## Imperative Example
 
-上面的示例中使用声明式方式来进行`markdown`的打字效果，当我们用流式拉取到数据时，文字是一个不断变化的过程，我们可以进行命令式的方式来加入文字，这样可以减少`markdown`的`rerender`
-使用方式：
+In the above example, the typing effect is handled declaratively. When streaming data, the text changes continuously, so you can use the imperative approach to add text, reducing markdown rerenders.
+
+Usage:
 `import { MarkdownCMD } from 'ds-markdown';`
 
-[在线查看](https://stackblitz.com/edit/vitejs-vite-2ri8kex3?file=src%2FApp.tsx)
+[View Online](https://stackblitz.com/edit/vitejs-vite-2ri8kex3?file=src%2FApp.tsx)
 
 ```tsx
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { MarkdownCMD } from 'ds-markdown';
 import 'ds-markdown/style.css';
 
 const markdown = `# ds-markdown
 
-\`ds-markdown\`是一个[React](https://react.dev)组件, 类似[deepseek官网](https://chat.deepseek.com/)风格的 \`Markdown\`
+\`ds-markdown\` is a [React](https://react.dev) component, similar in style to the deepseek official website \`Markdown\`
 
-## 特性
+## Features
 
-- 🦮 对`deepseek`官网的聊天响应效果进行了1:1还原
-- 🛠 自带打字效果
-- 🦮 内部封装了常用的\`markdown\`格式的文本显示
-- 🔤 对大文档进行了性能优化，进行分批处理，生成打字效果的时候不会对页面造成卡顿现象
+- 🦮 1:1 reproduction of the chat response effect from the deepseek official website
+- 🛠 Built-in typing effect
+- 🦮 Built-in common \`markdown\` text display
+- 🔤 Performance optimization for large documents: processes in batches to avoid UI lag when generating typing effects
 `;
 
 function App() {
   const ref = useRef();
 
   const onClick = () => {
-    // 如果重复点击，则会清空之前的效果
+    // If clicked repeatedly, previous effects will be cleared
     ref.current.clear();
-    // 显示思考过程
-    ref.current.push('这是思考过程:我正在思考 ds-markdown是什么\n\n思考完成,准备发送答案', 'thinking');
-    // 显示结果
+    // Show thinking process
+    ref.current.push('Thinking process: I am thinking about what ds-markdown is\n\nThinking finished, preparing to send answer', 'thinking');
+    // Show result
     ref.current.push(markdown, 'answer');
   };
 
   return (
     <div>
-      <button onClick={onClick}>点击显示文字效果</button>
+      <button onClick={onClick}>Show Typing Effect</button>
       <MarkdownCMD ref={ref} />
     </div>
   );
@@ -137,9 +137,40 @@ function App() {
 export default App;
 ```
 
-## 兼容性
+## Dark Mode Support
 
-由于本组件采用`react hooks`编写，所以`react`版本最低为`v16.8.0`
+### How Dark Mode Works
+
+The code block theme (light or dark) is determined by the value of `vite-ui-theme` in your browser's `localStorage`:
+- If `vite-ui-theme` is set to `'dark'`, code blocks will use the dark theme.
+- Any other value (or unset) will use the light theme.
+
+### How to Enable Dark Mode
+
+Set the theme in your application using JavaScript:
+
+```js
+window.localStorage.setItem('vite-ui-theme', 'dark'); // Enable dark mode
+window.localStorage.setItem('vite-ui-theme', 'light'); // Enable light mode
+```
+
+You can toggle this value based on your app's theme switcher or user preference.
+
+### Example: Toggle Dark Mode
+
+```js
+function toggleTheme() {
+  const current = window.localStorage.getItem('vite-ui-theme');
+  window.localStorage.setItem('vite-ui-theme', current === 'dark' ? 'light' : 'dark');
+  window.location.reload(); // or trigger a re-render in your app
+}
+```
+
+> **Note:** The code block theme is read once on component mount. If you change the theme, you may need to reload or re-render the component to see the effect.
+
+## Compatibility
+
+This component uses `react hooks`, so the minimum required `react` version is `v16.8.0`.
 
 ## License
 

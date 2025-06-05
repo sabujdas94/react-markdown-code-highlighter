@@ -1,38 +1,38 @@
 /* eslint-disable no-unused-vars */
 /**
- * 回答类型，思考和回答
+ * Answer type: thinking or answer
  */
 export type AnswerType = 'answer' | 'thinking';
 
 /**
- * 段落类型
- * 段落类型为br时，表示换行
- * 段落类型为text时，表示文本
+ * Paragraph type
+ * If the type is 'br', it means a line break
+ * If the type is 'text', it means text
  */
 export interface IParagraph {
-  /** 段落内容 */
+  /** Paragraph content */
   content?: string;
-  /** 是否已打字 */
+  /** Whether it has been typed */
   isTyped: boolean;
-  /** 段落类型 */
+  /** Paragraph type */
   type: 'br' | 'text';
-  /** 回答类型 */
+  /** Answer type */
   answerType: AnswerType;
 }
 
 export interface MarkdownProps {
-  /** 打字机效果间隔时间 */
+  /** Typing effect interval time */
   interval: number;
-  /** 是否关闭匀速打字机效果 */
+  /** Whether to disable pretty typing effect */
   isClosePrettyTyped?: boolean;
-  /** 打字完成后回调,  */
+  /** Callback after typing is finished */
   onEnd?: (data?: { str?: string; answerType?: AnswerType }) => void;
-  /** 开始打字回调 */
+  /** Callback when typing starts */
   onStart?: (data?: { currentIndex: number; currentChar: string; answerType: AnswerType; prevStr: string }) => void;
   /**
-   * 打字机打完一个字符回调
-   * @param char 字符
-   * @param index 字符索引
+   * Callback after typing a character
+   * @param char Character
+   * @param index Character index
    */
   onTypedChar?: (data?: { currentIndex: number; currentChar: string; answerType: AnswerType; prevStr: string }) => void;
 }
