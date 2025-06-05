@@ -302,13 +302,18 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         lastSegmentRaw.current += content;
       }
 
+      let resetLastSegmentRaw = false;
       const tokens = compiler(lastSegmentRaw.current);
 
       // 如果最后一个token是segment，则把最后一个token的raw赋值给lastSegmentRaw
-      if (tokens[tokens.length - 1].type === 'segment') {
-        lastSegmentRaw.current = tokens[tokens.length - 1].raw;
-      } else {
+      if (['segment'].includes(tokens[tokens.length - 1].type)) {
+        // todo: 处理segment
+      } else if (tokens[tokens.length - 1].type === 'space') {
         lastSegmentRaw.current = '';
+        resetLastSegmentRaw = true;
+      } else {
+        lastSegmentRaw.current = tokens[tokens.length - 1].raw;
+        resetLastSegmentRaw = true;
       }
 
       console.log(lastSegmentRaw.current);
@@ -316,7 +321,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       tokens.forEach((token) => {
         if (token.type === 'space') {
           charsRef.current.push({ content: content, answerType, contentType: 'space' });
-        } else {
+        } else if (token.type === 'segment') {
           charsRef.current.push(...(content.split('').map((char) => ({ content: char, answerType, contentType: 'segment' })) as IChar[]));
         }
       });
