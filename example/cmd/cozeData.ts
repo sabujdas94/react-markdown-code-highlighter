@@ -3565,3 +3565,72 @@ data:"[DONE]"
 `;
 
 export default data;
+
+// 帮我解析上面的data，并返回一个json对象，json对象的格式为：
+
+// {
+//   "event": "event:xxx",
+//   "content": "...",
+//   "answerType": "answer" | 'thinking' | 'follow_up' | 'verbose' | 'done'
+// }
+
+const convertData = (data: string) => {
+  const result = [];
+
+  let currentSrc = data;
+
+  while (currentSrc) {
+    const event = currentSrc.split('\n', 1)[0];
+
+    let remainSrc = currentSrc.slice(event.length + 1);
+
+    const dataReg = /^data:(\{[\s\S]+?\})(?=\n\nevent:|$)/g;
+
+    const cap = dataReg.exec(remainSrc);
+
+    if (!cap) {
+      break;
+    }
+
+    if (cap && event === 'event:conversation.message.delta') {
+      const jsonStr = cap[1];
+
+      try {
+        const json = JSON.parse(
+          jsonStr
+            .replace(/\n/g, '\\n')
+            .replace(/"：""/g, '"：\\""')
+            .replace(/""\\n/, '"\\"\\n')
+            .replace(/":" ""/g, '":" \\""')
+            .replace(/":"""/g, '":"\\""'),
+        );
+        const { content, reasoning_content } = json;
+
+        let _answerType = 'thinking';
+        let _content = '';
+
+        if (reasoning_content) {
+          _answerType = 'thinking';
+          _content = reasoning_content;
+        } else {
+          _answerType = 'answer';
+          _content = content;
+        }
+
+        result.push({
+          event,
+          content: _content,
+          answerType: _answerType,
+        });
+      } catch (error) {
+        debugger;
+      }
+    }
+
+    remainSrc = remainSrc.slice(cap[0].length + 2);
+    currentSrc = remainSrc;
+  }
+  return result;
+};
+
+export const cozeData = convertData(data);
