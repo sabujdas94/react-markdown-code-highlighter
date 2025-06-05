@@ -311,11 +311,13 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         lastSegmentRaw.current = '';
       }
 
+      console.log(lastSegmentRaw.current);
+
       tokens.forEach((token) => {
         if (token.type === 'space') {
-          charsRef.current.push({ content: token.raw, answerType, contentType: 'space' });
+          charsRef.current.push({ content: content, answerType, contentType: 'space' });
         } else {
-          charsRef.current.push(...(token.raw.split('').map((char) => ({ content: char, answerType, contentType: 'segment' })) as IChar[]));
+          charsRef.current.push(...(content.split('').map((char) => ({ content: char, answerType, contentType: 'segment' })) as IChar[]));
         }
       });
 
