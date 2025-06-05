@@ -3,6 +3,7 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState }
 import HighReactMarkdown from '../components/HighReactMarkdown/index.js';
 import classNames from 'classnames';
 import { AnswerType, IParagraph, MarkdownProps } from '../defined.js';
+import { compiler } from '../utils/compiler.js';
 import { __DEV__ } from '../constant.js';
 
 type MarkdownCMDProps = MarkdownProps;
@@ -10,6 +11,7 @@ type MarkdownCMDProps = MarkdownProps;
 interface IChar {
   content: string;
   answerType: AnswerType;
+  contentType: 'space' | 'segment';
 }
 
 export interface MarkdownRef {
@@ -50,12 +52,12 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
    * 稳定段落
    * 稳定段落是已经打过字，并且不会再变化的段落
    */
-  const [stableParagraphs, setStableParagraphs] = useState<IParagraph[]>([]);
+  const [stableSegments, setStableSegments] = useState<IParagraph[]>([]);
   /** 当前段落 */
-  const [currentParagraph, setCurrentParagraph] = useState<IParagraph | undefined>(undefined);
+  const [currentSegment, setCurrentSegment] = useState<IParagraph | undefined>(undefined);
   /** 当前段落引用 */
   const currentParagraphRef = useRef<IParagraph | undefined>(undefined);
-  currentParagraphRef.current = currentParagraph;
+  currentParagraphRef.current = currentSegment;
 
   /** 清除打字定时器 */
   const clearTimer = () => {
@@ -74,9 +76,9 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
   }, []);
 
   /** 思考段落 */
-  const thinkingParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'thinking'), [stableParagraphs]);
+  const thinkingParagraphs = useMemo(() => stableSegments.filter((paragraph) => paragraph.answerType === 'thinking'), [stableSegments]);
   /** 回答段落 */
-  const answerParagraphs = useMemo(() => stableParagraphs.filter((paragraph) => paragraph.answerType === 'answer'), [stableParagraphs]);
+  const answerParagraphs = useMemo(() => stableSegments.filter((paragraph) => paragraph.answerType === 'answer'), [stableSegments]);
 
   /**
    * 记录打过的字
@@ -208,14 +210,14 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         triggerOnTypedChar(char);
       }
 
-      const currentParagraph = currentParagraphRef.current;
-      /** 如果碰到 则需要处理成两个段落 */
-      if (char.content === '\n\n') {
-        if (currentParagraph) {
-          setStableParagraphs((prev) => {
+      const currentSegment = currentParagraphRef.current;
+      /** 如果碰到 space 则需要处理成两个段落 */
+      if (char.contentType === 'space') {
+        if (currentSegment) {
+          setStableSegments((prev) => {
             const newParagraphs = [...prev];
-            if (currentParagraph) {
-              newParagraphs.push({ ...currentParagraph, isTyped: false });
+            if (currentSegment) {
+              newParagraphs.push({ ...currentSegment, isTyped: false });
             }
             newParagraphs.push({
               content: '',
@@ -225,9 +227,9 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
             });
             return newParagraphs;
           });
-          setCurrentParagraph(undefined);
+          setCurrentSegment(undefined);
         } else {
-          setStableParagraphs((prev) => {
+          setStableSegments((prev) => {
             const newParagraphs = [...prev];
             newParagraphs.push({
               content: '',
@@ -243,7 +245,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       }
 
       // 处理当前段落
-      let _currentParagraph = currentParagraph;
+      let _currentParagraph = currentSegment;
       const newCurrentParagraph: IParagraph = {
         content: '',
         isTyped: false,
@@ -254,18 +256,18 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
       if (!_currentParagraph) {
         // 如果当前没有段落，则直接设置为当前段落
         _currentParagraph = newCurrentParagraph;
-      } else if (currentParagraph && currentParagraph?.answerType !== char.answerType) {
+      } else if (currentSegment && currentSegment?.answerType !== char.answerType) {
         // 如果当前段落和当前字符的回答类型不一致，则需要处理成两个段落
-        setStableParagraphs((prev) => {
+        setStableSegments((prev) => {
           const newParagraphs = [...prev];
-          newParagraphs.push({ ...currentParagraph, isTyped: false });
+          newParagraphs.push({ ...currentSegment, isTyped: false });
           return newParagraphs;
         });
         _currentParagraph = newCurrentParagraph;
-        setCurrentParagraph(_currentParagraph);
+        setCurrentSegment(_currentParagraph);
       }
 
-      setCurrentParagraph((prev) => {
+      setCurrentSegment((prev) => {
         return {
           ..._currentParagraph,
           content: (prev?.content || '') + char.content,
@@ -278,6 +280,8 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
 
     startTyped(true);
   };
+
+  const lastSegmentRaw = useRef('');
 
   useImperativeHandle(ref, () => ({
     /**
@@ -292,16 +296,33 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         }
         return;
       }
-      // 如果两个\n,则\n这两个字符要合一起，作为一个字符处理,并且把多个\n处理成一个\n
-      const charsGroup = content.split('\n\n');
-      charsGroup.forEach((chars, index) => {
-        if (isClosePrettyTyped) {
-          charsRef.current.push({ content: chars, answerType });
-        } else {
-          charsRef.current.push(...chars.split('').map((char) => ({ content: char, answerType })));
-        }
-        if (index !== charsGroup.length - 1) {
-          charsRef.current.push({ content: '\n\n', answerType });
+      if (!lastSegmentRaw.current) {
+        lastSegmentRaw.current = content;
+      } else {
+        lastSegmentRaw.current += content;
+      }
+
+      let resetLastSegmentRaw = false;
+      const tokens = compiler(lastSegmentRaw.current);
+
+      // 如果最后一个token是segment，则把最后一个token的raw赋值给lastSegmentRaw
+      if (['segment'].includes(tokens[tokens.length - 1].type)) {
+        // todo: 处理segment
+      } else if (tokens[tokens.length - 1].type === 'space') {
+        lastSegmentRaw.current = '';
+        resetLastSegmentRaw = true;
+      } else {
+        lastSegmentRaw.current = tokens[tokens.length - 1].raw;
+        resetLastSegmentRaw = true;
+      }
+
+      console.log(lastSegmentRaw.current);
+
+      tokens.forEach((token) => {
+        if (token.type === 'space') {
+          charsRef.current.push({ content: content, answerType, contentType: 'space' });
+        } else if (token.type === 'segment') {
+          charsRef.current.push(...(content.split('').map((char) => ({ content: char, answerType, contentType: 'segment' })) as IChar[]));
         }
       });
 
@@ -315,8 +336,8 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
     clear: () => {
       clearTimer();
       charsRef.current = [];
-      setStableParagraphs([]);
-      setCurrentParagraph(undefined);
+      setStableSegments([]);
+      setCurrentSegment(undefined);
       isWholeTypedEndRef.current = false;
     },
     /**
@@ -339,7 +360,7 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
           }
           return <HighReactMarkdown key={index}>{paragraph.content || ''}</HighReactMarkdown>;
         })}
-        {currentParagraph?.answerType === answerType && <HighReactMarkdown key={currentParagraph.content}>{currentParagraph.content || ''}</HighReactMarkdown>}
+        {currentSegment?.answerType === answerType && <HighReactMarkdown key={currentSegment.content}>{currentSegment.content || ''}</HighReactMarkdown>}
       </div>
     );
   };
@@ -351,8 +372,8 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         apple: true,
       })}
     >
-      {(thinkingParagraphs.length > 0 || currentParagraph?.answerType === 'thinking') && <div className="ds-markdown-thinking">{getParagraphs(thinkingParagraphs, 'thinking')}</div>}
-      {(answerParagraphs.length > 0 || currentParagraph?.answerType === 'answer') && <div className="ds-markdown-answer">{getParagraphs(answerParagraphs, 'answer')}</div>}
+      {(thinkingParagraphs.length > 0 || currentSegment?.answerType === 'thinking') && <div className="ds-markdown-thinking">{getParagraphs(thinkingParagraphs, 'thinking')}</div>}
+      {(answerParagraphs.length > 0 || currentSegment?.answerType === 'answer') && <div className="ds-markdown-answer">{getParagraphs(answerParagraphs, 'answer')}</div>}
     </div>
   );
 });
