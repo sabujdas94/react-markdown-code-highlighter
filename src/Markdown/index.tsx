@@ -6,10 +6,10 @@ import MarkdownCMD, { MarkdownRef } from '../MarkdownCMD/index.js';
 interface MarkdownImplProps extends MarkdownProps {
   children: string | undefined;
   answerType: AnswerType;
-  theme?: ThemeType; // Add theme prop
+  theme: ThemeType; // Add theme prop
 }
 
-const MarkdownInner: React.FC<MarkdownImplProps> = ({ children: _children = '', answerType, theme = 'light', ...rest }) => {
+const MarkdownInner: React.FC<MarkdownImplProps> = ({ children: _children = '', answerType, theme, ...rest }) => {
   const cmdRef = useRef<MarkdownRef>(null!);
   const prefixRef = useRef('');
   const content = useMemo(() => {
