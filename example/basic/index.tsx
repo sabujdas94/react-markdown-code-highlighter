@@ -87,6 +87,7 @@ const BasicDemo = () => {
               //   console.log('Typing', args);
               // }}
               onTypedChar={throttleOnTypedChar}
+              theme='dark'
             >
               {answerContent}
             </Markdown>

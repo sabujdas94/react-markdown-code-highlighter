@@ -4,6 +4,8 @@
  */
 export type AnswerType = 'answer' | 'thinking';
 
+export type ThemeType = 'dark' | 'light';
+
 /**
  * Paragraph type
  * If the type is 'br', it means a line break
@@ -35,4 +37,6 @@ export interface MarkdownProps {
    * @param index Character index
    */
   onTypedChar?: (data?: { currentIndex: number; currentChar: string; answerType: AnswerType; prevStr: string }) => void;
+  /** Theme type: 'dark' or 'light' */
+  theme: ThemeType;
 }

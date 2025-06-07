@@ -6,16 +6,11 @@ const ThemeContext = React.createContext<'light' | 'dark'>('light');
 interface BlockWrapProps {
   children: React.ReactNode;
   language: string;
+  theme: 'dark' | 'light'; // Optional theme prop
 }
 
-const BlockWrap: React.FC<BlockWrapProps> = ({ children, language }) => {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsDark(window.localStorage.getItem('vite-ui-theme') === 'dark');
-    }
-  }, []);
+const BlockWrap: React.FC<BlockWrapProps> = ({ children, language, theme }) => {
+  const [isDark, setIsDark] = useState('dark' == theme);
 
   const blockClass = useMemo(
     () => `md-code-block ${isDark ? 'md-code-block-dark' : 'md-code-block-light'}`,

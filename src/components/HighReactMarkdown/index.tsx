@@ -9,6 +9,7 @@ import BlockWrap from '../BlockWrap/index.js';
 
 interface HighReactMarkdownProps extends Options {
   id?: number;
+  theme: 'dark' | 'light'; // Add theme prop
 }
 
 const modulePrefix = 'HighReactMarkdown';
@@ -17,7 +18,7 @@ const HighReactMarkdown: React.FC<HighReactMarkdownProps> = (props) => {
     <Markdown
       remarkPlugins={[gfmPlugin]}
       components={{
-        code: ({ className, children, ...props }) => {
+        code: ({ className, children, ...codeProps }) => {
           const match = /language-(\w+)/.exec(className || '');
           if (match) {
             const language = match[1];
@@ -31,7 +32,7 @@ const HighReactMarkdown: React.FC<HighReactMarkdownProps> = (props) => {
               ? hljs.highlight(code, { language }).value
               : hljs.highlightAuto(code).value;
             return (
-              <BlockWrap language={language}>
+              <BlockWrap language={language} theme={props.theme}>
                 <pre
                   className={`hljs language-${language}`}
                   dangerouslySetInnerHTML={{ __html: highlighted }}
@@ -40,7 +41,7 @@ const HighReactMarkdown: React.FC<HighReactMarkdownProps> = (props) => {
             );
           } else {
             return (
-              <code className={className} {...props}>
+              <code className={className} {...codeProps}>
                 {children}
               </code>
             );

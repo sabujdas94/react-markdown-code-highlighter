@@ -1,14 +1,15 @@
 import React, { memo, useEffect, useMemo, useRef } from 'react';
 import { __DEV__ } from '../constant.js';
-import { AnswerType, MarkdownProps } from '../defined.js';
+import { AnswerType, MarkdownProps, ThemeType } from '../defined.js';
 import MarkdownCMD, { MarkdownRef } from '../MarkdownCMD/index.js';
 
 interface MarkdownImplProps extends MarkdownProps {
   children: string | undefined;
   answerType: AnswerType;
+  theme?: ThemeType; // Add theme prop
 }
 
-const MarkdownInner: React.FC<MarkdownImplProps> = ({ children: _children = '', answerType, ...rest }) => {
+const MarkdownInner: React.FC<MarkdownImplProps> = ({ children: _children = '', answerType, theme = 'light', ...rest }) => {
   const cmdRef = useRef<MarkdownRef>(null!);
   const prefixRef = useRef('');
   const content = useMemo(() => {
@@ -39,11 +40,11 @@ const MarkdownInner: React.FC<MarkdownImplProps> = ({ children: _children = '', 
     }
   }, [answerType, content]);
 
-  return <MarkdownCMD ref={cmdRef} {...rest} />;
+  return <MarkdownCMD ref={cmdRef} theme={theme} {...rest} />;
 };
 
 const Markdown: React.FC<MarkdownImplProps> = (props) => {
-  const { children = '', answerType = 'answer' } = props;
+  const { children = '', answerType = 'answer', theme = 'light' } = props;
 
   if (__DEV__) {
     if (!['thinking', 'answer'].includes(answerType)) {
@@ -52,9 +53,12 @@ const Markdown: React.FC<MarkdownImplProps> = (props) => {
     if (typeof children !== 'string') {
       throw new Error('The child of Markdown component must be a string');
     }
+    if (theme && !['dark', 'light'].includes(theme)) {
+      throw new Error('The theme of Markdown component must be either "dark" or "light"');
+    }
   }
 
-  return <MarkdownInner {...props} answerType={answerType} />;
+  return <MarkdownInner {...props} answerType={answerType} theme={theme} />;
 };
 
 export default memo(Markdown);
