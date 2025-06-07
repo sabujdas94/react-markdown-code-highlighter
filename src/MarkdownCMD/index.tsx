@@ -293,7 +293,10 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
         return;
       }
       // If there are two \n, treat them as one character, and merge multiple \n into one \n
-      const charsGroup = content.split('\n\n');
+
+
+      const fencedContent = processFencedCodeBlocks(content).content;
+      const charsGroup = fencedContent.split('\n\n');
       charsGroup.forEach((chars, index) => {
         if (isClosePrettyTyped) {
           charsRef.current.push({ content: chars, answerType });
@@ -358,3 +361,39 @@ const MarkdownCMD = forwardRef<MarkdownRef, MarkdownCMDProps>(({ interval = 30, 
 });
 
 export default MarkdownCMD;
+
+/**
+ * Detect fenced code blocks in markdown content and replace '\n\n' with '\n \n' inside them.
+ * Returns the modified content and an array of code block ranges.
+ * @param content The markdown string
+ */
+function processFencedCodeBlocks(content: string): { content: string; blocks: Array<{ start: number; end: number; fence: string }> } {
+  const lines = content.split('\n');
+  const blocks: Array<{ start: number; end: number; fence: string }> = [];
+  let inCodeBlock = false;
+  let codeBlockStart = -1;
+  let codeBlockFence = '';
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const fenceMatch = line.match(/^\s*(`{3,}|~{3,})/);
+    if (fenceMatch) {
+      if (!inCodeBlock) {
+        inCodeBlock = true;
+        codeBlockStart = i;
+        codeBlockFence = fenceMatch[1];
+      } else if (line.trim().startsWith(codeBlockFence)) {
+        inCodeBlock = false;
+        blocks.push({ start: codeBlockStart, end: i, fence: codeBlockFence });
+        codeBlockStart = -1;
+        codeBlockFence = '';
+      }
+    }
+    // If in code block, replace any empty line after this line
+    if (inCodeBlock && i < lines.length - 1 && lines[i + 1] === '') {
+      lines[i + 1] = ' ';
+    }
+  }
+  // After processing, join lines back
+  const processedContent = lines.join('\n');
+  return { content: processedContent, blocks };
+}

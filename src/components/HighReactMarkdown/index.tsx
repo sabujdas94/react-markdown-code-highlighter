@@ -21,7 +21,12 @@ const HighReactMarkdown: React.FC<HighReactMarkdownProps> = (props) => {
           const match = /language-(\w+)/.exec(className || '');
           if (match) {
             const language = match[1];
+            // console.log(`${modulePrefix} code language`, language);
+
             const code = String(children).replace(/\n$/, '');
+
+            // console.log(`${modulePrefix} code content`, code);
+            
             const highlighted = hljs.getLanguage(language)
               ? hljs.highlight(code, { language }).value
               : hljs.highlightAuto(code).value;

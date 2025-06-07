@@ -31,7 +31,7 @@ const BasicDemo = () => {
   });
 
   const onClick = () => {
-    setThinkingContent(json.thinking_content);
+    setAnswerContent(json.content);
   };
   const onReset = () => {
     setThinkingContent('');
@@ -70,26 +70,6 @@ const BasicDemo = () => {
       </div>
       <div className="ds-message-box" ref={messageDivRef} onScroll={onScroll}>
         <div className="ds-message-list">
-          <Markdown
-            interval={0}
-            answerType="answer"
-            onEnd={(args) => {
-              // console.log('Thinking finished', args);
-              if (thinkingContent) {
-                setAnswerContent(json.content);
-              }
-            }}
-            // onStart={(args) => {
-            //   console.log('Thinking started', args);
-            // }}
-            // onTypedChar={(args) => {
-            //   console.log('Typing', args);
-            // }}
-            onTypedChar={throttleOnTypedChar}
-          >
-            {thinkingContent}
-          </Markdown>
-
           {answerContent && (
             <Markdown
               interval={0}
